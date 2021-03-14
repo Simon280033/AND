@@ -4,11 +4,11 @@ Applikationsnavn: FellowShippers
 Motivation: 
 Onlinehandel oplever på nuværende tidspunkt enorm vækst, grundet COVID-19 epidemien og dens medfølgende problematikker angående traditionelle former for handel.
 For mange shoppere er forsendelsesafgiften en kilde til frustration, da det er en afgift man som fysisk shopper ikke er vant til at betale.
-Mange onlinebutikker har dog mulighed for gratis forsendelse, ved køb over et større beløb.
+Mange onlinebutikker giver dog mulighed for gratis forsendelse, ved køb over et større beløb.
 "FellowShippers" gør det muligt for brugeren, at finde andre personer i nærheden, der har tænkt sig at handle i samme webshop som dem selv.
 En bruger kan for eksempel slå en annonce op for Zalando.dk, hvor tingene kan hentes på dennes adresse (kan vælges i google maps). Der kan derefter stå hvor mange penge der yderligere
 skal handles for, for at få gratis forsendelse. Brugere kan koble sig på med links til de ting de vil have med, og deres pris. Hvis ejeren accepterer, tilføjes de til shippingen, og kan betale deres andel.
-De vil derefter blive notificeret når pakken er ankommet til ham der startede annoncen, så de kan komme og hente den. Brugere kan naturligvis anmeldes, så man kan vælge om man vil handle sammen med en,
+De vil derefter blive notificeret når pakken er ankommet til personen der startede annoncen, så de kan komme og hente den. Brugere kan naturligvis anmeldes, så man kan vælge om man vil handle sammen med en,
 baseret på deres pålidelighed. Ting så som track and trace links og kvitteringer, kan lægges op på annoncen, så de andre brugere kan se hvor langt pakken er etc. 
 
 MoSCoW requirements:
