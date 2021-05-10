@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1074776787171",
+    "project_id": "fellowshippers-aec83",
+    "storage_bucket": "fellowshippers-aec83.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1074776787171:android:66a1970243fab9fbdb1dd6",
+        "android_client_info": {
+          "package_name": "com.example.andproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1074776787171-rvn9iahuta74sgtuahd579kr4ibp1es2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.andproject",
+            "certificate_hash": "b60d5bdd74de7ba977932be35c8045a1165fb271"
+          }
+        },
+        {
+          "client_id": "1074776787171-sh4mplrtlc5r76cu769obnuf4rfrj8s9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAQEC1cE3b7PV6jvWLFRpnG2u3ADcgMmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1074776787171-sh4mplrtlc5r76cu769obnuf4rfrj8s9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
