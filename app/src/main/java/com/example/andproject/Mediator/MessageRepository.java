@@ -19,11 +19,12 @@ public class MessageRepository {
     }
 
     public void init(String userId) {
-        myRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+        myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("users").child(userId);
         message = new MessageLiveData(myRef);
     }
 
     public void saveMessage(String message) {
+System.out.println("test3");
         myRef.setValue(new Message(message));
     }
 
