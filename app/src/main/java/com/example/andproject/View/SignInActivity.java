@@ -13,12 +13,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.SignInViewModel;
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUserMetadata;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class SignInActivity extends AppCompatActivity {
-    private static final int RC_SIGN_IN = 42;
+    private static final int RC_SIGN_IN = 42; // <- figure out what this is
     private SignInViewModel viewModel;
 
     @Override
@@ -31,13 +33,28 @@ public class SignInActivity extends AppCompatActivity {
 
     private void checkIfSignedIn() {
         viewModel.getCurrentUser().observe(this, user -> {
-            if (user != null)
-                goToMainActivity();
+            // We check if a user was returned
+            if (user != null) {
+                if (isNewUser()) {
+                    System.out.println("new user");
+                    goToProfileEditor();
+                    //goToMainActivity();
+                } else {
+                    System.out.println("old user");
+                    goToProfileEditor();
+                    //goToMainActivity();
+                }
+            }
         });
     }
 
     private void goToMainActivity() {
         startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
+
+    private void goToProfileEditor() {
+        startActivity(new Intent(this, ProfileEditorActivity.class));
         finish();
     }
 
@@ -68,5 +85,17 @@ public class SignInActivity extends AppCompatActivity {
             goToMainActivity();
         else
             Toast.makeText(this, "SIGN IN CANCELLED", Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean isNewUser() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUserMetadata metadata = auth.getCurrentUser().getMetadata();
+        if (metadata.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
+            // The user is new
+            return true;
+        } else {
+            // This is an existing user
+            return false;
+        }
     }
 }
