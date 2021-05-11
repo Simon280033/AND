@@ -17,6 +17,6 @@ public class SignInViewModel extends AndroidViewModel {
     }
 
     public LiveData<FirebaseUser> getCurrentUser(){
-        return userRepository.getCurrentUser();
+        return userRepository.getCurrentUserData();
     }
 }

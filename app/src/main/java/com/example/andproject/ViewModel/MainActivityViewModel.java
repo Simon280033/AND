@@ -21,12 +21,12 @@ public class MainActivityViewModel extends AndroidViewModel {
     }
 
     public void init() {
-        String userId = userRepository.getCurrentUser().getValue().getUid();
+        String userId = userRepository.getCurrentUserData().getValue().getUid();
         messageRepository.init(userId);
     }
 
     public LiveData<FirebaseUser> getCurrentUser(){
-        return userRepository.getCurrentUser();
+        return userRepository.getCurrentUserData();
     }
 
     public void saveMessage(String message) {
