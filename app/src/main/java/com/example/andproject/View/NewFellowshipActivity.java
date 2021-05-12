@@ -1,5 +1,6 @@
 package com.example.andproject.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -7,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,15 +20,21 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.NewFellowshipViewModel;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -36,6 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class NewFellowshipActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, DatePickerDialog.OnDateSetListener {
 
@@ -67,6 +76,13 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
             goToFellowships();
         });
 
+        createFellowshipButton.setOnClickListener((View v) -> {
+            createNewFellowShip();
+            Toast.makeText(NewFellowshipActivity.this, "Successfully created new fellowship!",
+                    Toast.LENGTH_LONG).show();
+            goToFellowships();
+        });
+
         // We set the date edit text uneditable
         deadlineEditText.setEnabled(false);
 
@@ -76,6 +92,25 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
         setDatePicker();
 
         bindButtonAvailability();
+    }
+
+    private void createNewFellowShip() {
+        // We create the Fellowship object
+        String id = UUID.randomUUID().toString(); // We create a random ID
+        String creatorId = viewModel.getCurrentUser().getValue().getUid();
+        String webshop = (String) webshopSpinner.getSelectedItem();
+        String category = (String) categorySpinner.getSelectedItem();
+        int amountNeeded = Integer.parseInt(amountNeededEditText.getText().toString());
+        String paymentMethod = (String) paymentMethodSpinner.getSelectedItem();;
+        String deadline = deadlineEditText.getText().toString();
+        int isCompleted = 0; // We use this as a BIT - 1 = TRUE, 0 = FALSE
+
+        Fellowship fs = new Fellowship(id, creatorId, webshop, category, amountNeeded, paymentMethod, deadline, isCompleted);
+
+        // We save it to the database
+        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(id);
+
+        myRef.setValue(fs);
     }
 
     // This method binds the create buttons-availability to whether or not all info is filled
