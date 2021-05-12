@@ -38,6 +38,8 @@ public class ProfileViewActivity extends AppCompatActivity {
     private ProfileViewModel viewModel;
 
     private Button profileActionButton;
+    private Button cancelButton;
+
     private TextView nameTextView;
     private TextView shipsCounterTextView;
     private ImageView imageView;
@@ -51,14 +53,18 @@ public class ProfileViewActivity extends AppCompatActivity {
 
         // We get the UI components
         profileActionButton = findViewById(R.id.profileActionButton);
+        cancelButton = findViewById(R.id.cancelButton);
+
         nameTextView = findViewById(R.id.nameTextView);
         shipsCounterTextView = findViewById(R.id.shipsCounterTextView);
         imageView = findViewById(R.id.imageView);
         ratingsScrollView = findViewById(R.id.ratingsScrollView);
 
-        profileActionButton.setOnClickListener((View v) -> {
-            goToProfileEdit();
+        cancelButton.setOnClickListener((View v) -> {
+            goToMainActivity();
         });
+
+        setButtonAccordingToProfile();
 
         // We set the avatar
         setAvatar();
@@ -67,7 +73,7 @@ public class ProfileViewActivity extends AppCompatActivity {
     private void setAvatar() {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-        myRef.child("users").child(viewModel.getCurrentUser().getValue().getUid()).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        myRef.child("users").child(viewModel.getCurrentUserData().getValue().getUid()).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
@@ -86,6 +92,19 @@ public class ProfileViewActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setButtonAccordingToProfile() {
+        // We figure out whether or not this is our own profile
+        if (viewModel.isOwnProfile()) {
+            // If it is
+            profileActionButton.setText("Edit profile");
+            profileActionButton.setOnClickListener((View v) -> {
+                goToProfileEdit();
+            });
+        } else {
+            profileActionButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void onActionButtonClicked() {

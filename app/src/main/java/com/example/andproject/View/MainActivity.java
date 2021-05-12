@@ -3,6 +3,7 @@ package com.example.andproject.View;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.MainActivityViewModel;
 import com.google.firebase.database.DataSnapshot;
@@ -19,10 +21,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
-    private EditText messageEditText;
-    private TextView messageTextView;
-    private TextView welcomeMessage;
     private MainActivityViewModel viewModel;
+
+    private Button viewProfileButton;
+    private Button fellowshipsButton;
+    private Button signOutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,21 +34,24 @@ public class MainActivity extends AppCompatActivity {
         viewModel.init();
         checkIfSignedIn();
         setContentView(R.layout.activity_main);
-        messageEditText = findViewById(R.id.message_editText);
-        messageTextView = findViewById(R.id.message_textView);
-        welcomeMessage = findViewById(R.id.welcome_message);
 
-        viewModel.getMessage().observe(this, message -> {
-            if (message != null)
-                messageTextView.setText(message.getBody());
+        viewProfileButton = findViewById(R.id.profileButton);
+        fellowshipsButton = findViewById(R.id.fellowshipsButton);
+        signOutButton = findViewById(R.id.signOutButton);
+
+        viewProfileButton.setOnClickListener((View v) -> {
+            goToProfileView();
+        });
+
+        signOutButton.setOnClickListener((View v) -> {
+            signOut();
         });
     }
 
     private void checkIfSignedIn() {
         viewModel.getCurrentUser().observe(this, user -> {
             if (user != null) {
-                String message = "Welcome " + user.getDisplayName();
-                welcomeMessage.setText(message);
+
             } else
                 startLoginActivity();
         });
@@ -56,11 +62,12 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    public void saveData(View v) {
-        viewModel.saveMessage(messageEditText.getText().toString());
+    private void goToProfileView() {
+        viewModel.setViewProfileOf(new User(viewModel.getCurrentUser().getValue().getUid(), null, null, null));
+        startActivity(new Intent(this, ProfileViewActivity.class));
     }
 
-    public void signOut(View v) {
+    public void signOut() {
         viewModel.signOut();
     }
 }

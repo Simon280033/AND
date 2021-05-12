@@ -58,8 +58,8 @@
 
     <ScrollView
         android:id="@+id/ratingsScrollView"
-        android:layout_width="430dp"
-        android:layout_height="174dp"
+        android:layout_width="416dp"
+        android:layout_height="114dp"
         android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
-        android:text="Button"
+        android:text="Edit profile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ratingsScrollView" />
@@ -88,6 +88,16 @@
         android:layout_marginBottom="5dp"
         android:text="Ratings:"
         app:layout_constraintBottom_toTopOf="@+id/ratingsScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:text="Cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

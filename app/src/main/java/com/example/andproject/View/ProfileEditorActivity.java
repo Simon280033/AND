@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,9 +23,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -63,7 +59,7 @@ public class ProfileEditorActivity extends AppCompatActivity {
         setContentView(R.layout.profile_editor_activity);
 
         // We get the UI components
-        saveButton = findViewById(R.id.saveButton);
+        saveButton = findViewById(R.id.signOutButton);
         changeImageButton = findViewById(R.id.changeImageButton);
 
         nameEditText = findViewById(R.id.nameEditText);

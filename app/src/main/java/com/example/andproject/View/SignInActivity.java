@@ -48,10 +48,9 @@ public class SignInActivity extends AppCompatActivity {
                 if (isNewUser()) {
                     System.out.println("new user");
                     goToProfileEditor();
-                    //goToMainActivity();
                 } else {
                     System.out.println("old user");
-                    goToProfileView();
+                    goToMainActivity();
                 }
             }
         });
