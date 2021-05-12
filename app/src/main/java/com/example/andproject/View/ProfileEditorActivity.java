@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.ProfileEditorViewModel;
 import com.google.android.gms.tasks.Continuation;
@@ -23,6 +24,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -65,7 +68,7 @@ public class ProfileEditorActivity extends AppCompatActivity {
 
         // We set button methods
         saveButton.setOnClickListener((View v) -> {
-            updateUser();
+            saveButtonPressed();
             goToMainActivity();
         });
 
@@ -168,6 +171,14 @@ public class ProfileEditorActivity extends AppCompatActivity {
         });
     }
 
+    private void saveButtonPressed() {
+        // If the standard avatar view is visible, the user has not changed pictures
+        // We check if the changed usernames
+        if (!(displayNameTextView.getText().equals(viewModel.getCurrentUserData().getValue().getDisplayName()))) {
+            SaveUserInfo();
+        }
+    }
+
     private void updateUser() {
         if (downloadUri != null) {
             viewModel.updateUser("username", downloadUri);
@@ -177,5 +188,26 @@ public class ProfileEditorActivity extends AppCompatActivity {
     private void goToMainActivity() {
         startActivity(new Intent(this, MainActivity.class));
         finish();
+    }
+
+    private void SaveUserInfo() {
+        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("users").child(viewModel.getCurrentUserData().getValue().getUid());
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        storageRef.child("images/avatars/" + viewModel.getCurrentUserData().getValue().getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                System.out.println("test; exists");
+                User user = new User(viewModel.getCurrentUserData().getValue().getUid(), "testName", uri.toString());
+                myRef.setValue(user);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                System.out.println("test; exists not");
+            }
+        });
     }
 }

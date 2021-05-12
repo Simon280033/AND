@@ -3,6 +3,7 @@ package com.example.andproject.Mediator;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
+import com.example.andproject.Entities.Message;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

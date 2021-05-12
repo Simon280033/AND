@@ -2,15 +2,12 @@ package com.example.andproject.ViewModel;
 
 import android.app.Application;
 import android.net.Uri;
-import android.util.Pair;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.example.andproject.Model.UserRepository;
-import com.google.android.gms.tasks.Task;
+import com.example.andproject.Mediator.UserRepository;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.storage.UploadTask;
 
 public class ProfileEditorViewModel extends AndroidViewModel {
     private final UserRepository userRepository;

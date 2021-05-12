@@ -5,39 +5,35 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.example.andproject.Mediator.Message;
-import com.example.andproject.Mediator.MessageRepository;
-import com.example.andproject.Model.UserRepository;
+import com.example.andproject.Entities.Message;
+import com.example.andproject.Model.Model;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivityViewModel extends AndroidViewModel {
-    private final UserRepository userRepository;
-    private final MessageRepository messageRepository;
+    private final Model model;
 
     public MainActivityViewModel(Application app){
         super(app);
-        userRepository = UserRepository.getInstance(app);
-        messageRepository = MessageRepository.getInstance();
+        model = Model.getInstance(app);
     }
 
     public void init() {
-        String userId = userRepository.getCurrentUserData().getValue().getUid();
-        messageRepository.init(userId);
+        model.init();
     }
 
     public LiveData<FirebaseUser> getCurrentUser(){
-        return userRepository.getCurrentUserData();
+        return model.getCurrentUserData();
     }
 
     public void saveMessage(String message) {
-        messageRepository.saveMessage(message);
+        model.saveMessage(message);
     }
 
     public LiveData<Message> getMessage() {
-        return messageRepository.getMessage();
+        return model.getMessage();
     }
 
     public void signOut() {
-        userRepository.signOut();
+        model.signOut();
     }
 }

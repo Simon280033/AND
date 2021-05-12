@@ -8,10 +8,10 @@ import androidx.lifecycle.LiveData;
 import com.example.andproject.Mediator.UserRepository;
 import com.google.firebase.auth.FirebaseUser;
 
-public class SignInViewModel extends AndroidViewModel {
+public class ProfileViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
 
-    public SignInViewModel(Application app){
+    public ProfileViewModel(Application app){
         super(app);
         userRepository = UserRepository.getInstance(app);
     }
