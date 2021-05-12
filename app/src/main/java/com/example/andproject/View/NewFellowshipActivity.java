@@ -3,11 +3,16 @@ package com.example.andproject.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,8 +31,18 @@ import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.NewFellowshipViewModel;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,13 +61,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.google.android.material.internal.ContextUtils.getActivity;
+
 public class NewFellowshipActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, DatePickerDialog.OnDateSetListener {
 
     private NewFellowshipViewModel viewModel;
 
     private Spinner categorySpinner, webshopSpinner, paymentMethodSpinner;
-    private Button deadlinePickButton, createFellowshipButton, cancelCreateFellowshipButton;
-    private EditText deadlineEditText, amountNeededEditText;
+    private Button deadlinePickButton, createFellowshipButton, cancelCreateFellowshipButton, getLocationButton;
+    private EditText deadlineEditText, amountNeededEditText, locationEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +84,12 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
 
         amountNeededEditText = findViewById(R.id.amountNeededEditText);
         deadlineEditText = findViewById(R.id.deadlineEditText);
+        locationEditText = findViewById(R.id.locationEditText);
 
         deadlinePickButton = findViewById(R.id.deadlinePickButton);
         createFellowshipButton = findViewById(R.id.createFellowshipButton);
         cancelCreateFellowshipButton = findViewById(R.id.cancelCreateFellowshipButton);
+        getLocationButton = findViewById(R.id.getLocationButton);
 
         cancelCreateFellowshipButton.setOnClickListener((View v) -> {
             goToFellowships();
@@ -83,8 +102,14 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
             goToFellowships();
         });
 
-        // We set the date edit text uneditable
+        getLocationButton.setOnClickListener((View v) -> {
+            getUsersLocation();
+            createFellowshipButton.setEnabled(allInfoEntered());
+        });
+
+        // We set the date/location edit texts uneditable
         deadlineEditText.setEnabled(false);
+        locationEditText.setEnabled(false);
 
         setWebshopSpinner();
         setCategorySpinner();
@@ -92,6 +117,39 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
         setDatePicker();
 
         bindButtonAvailability();
+    }
+
+    // YOU HAVE MANUALLY ENABLED LOCATIONS FOR APP!!!! FIND A WAY TO PROMPT USER TO ENABLE IT
+    private void getUsersLocation() {
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        String latAndLong = null;
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            System.out.println("læs: no perms");
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            // Logic to handle location object
+                            locationEditText.setEnabled(true);
+                            locationEditText.setText(location.getLatitude() + ", " + location.getLongitude());
+                            locationEditText.setEnabled(false);
+                        }
+                    }
+                });
+
     }
 
     private void createNewFellowShip() {
@@ -103,9 +161,10 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
         int amountNeeded = Integer.parseInt(amountNeededEditText.getText().toString());
         String paymentMethod = (String) paymentMethodSpinner.getSelectedItem();;
         String deadline = deadlineEditText.getText().toString();
+        String latAndLong = locationEditText.getText().toString();
         int isCompleted = 0; // We use this as a BIT - 1 = TRUE, 0 = FALSE
 
-        Fellowship fs = new Fellowship(id, creatorId, webshop, category, amountNeeded, paymentMethod, deadline, isCompleted);
+        Fellowship fs = new Fellowship(id, creatorId, webshop, category, amountNeeded, paymentMethod, deadline, latAndLong, isCompleted);
 
         // We save it to the database
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(id);
@@ -170,6 +229,9 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
             allIsEntered = false;
         }
         if(amountNeededEditText.getText().toString().trim().length() == 0 || Integer.parseInt(amountNeededEditText.getText().toString()) < 1) {
+            allIsEntered = false;
+        }
+        if(locationEditText.getText().toString().trim().length() == 0) {
             allIsEntered = false;
         }
 
