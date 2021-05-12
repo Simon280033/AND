@@ -57,7 +57,7 @@ public class ProfileViewActivity extends AppCompatActivity {
         ratingsScrollView = findViewById(R.id.ratingsScrollView);
 
         profileActionButton.setOnClickListener((View v) -> {
-            goToMainActivity();
+            goToProfileEdit();
         });
 
         // We set the avatar
@@ -79,7 +79,7 @@ public class ProfileViewActivity extends AppCompatActivity {
 
                     Map<String,String> td=(HashMap<String, String>)ds.getValue();
 
-                    User user = new User(td.get("id"), td.get("displayName"), td.get("imageUrl"));
+                    User user = new User(td.get("id"), td.get("displayName"), td.get("imageUrl"), td.get("email"));
 
                     nameTextView.setText(user.displayName);
                     Glide.with(ProfileViewActivity.this).load(Uri.parse(user.imageUrl)).into(imageView);
@@ -95,6 +95,11 @@ public class ProfileViewActivity extends AppCompatActivity {
 
     private void goToMainActivity() {
         startActivity(new Intent(this, MainActivity.class));
+        finish();
+    }
+
+    private void goToProfileEdit() {
+        startActivity(new Intent(this, ProfileEditorActivity.class));
         finish();
     }
 }

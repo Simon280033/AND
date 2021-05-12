@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,13 +24,20 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileEditorActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 42;
@@ -36,7 +45,7 @@ public class ProfileEditorActivity extends AppCompatActivity {
 
     private Button saveButton;
     private Button changeImageButton;
-    private TextView displayNameTextView;
+    private EditText nameEditText;
     private TextView emailTextView;
     private ImageView avatarView;
     private ImageView newAvatarView;
@@ -57,14 +66,14 @@ public class ProfileEditorActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.saveButton);
         changeImageButton = findViewById(R.id.changeImageButton);
 
-        displayNameTextView = findViewById(R.id.displayNameTextView);
+        nameEditText = findViewById(R.id.nameEditText);
         emailTextView = findViewById(R.id.emailTextView);
         avatarView = findViewById(R.id.avatarView);
         newAvatarView = findViewById(R.id.newAvatarView);
         newAvatarView.setVisibility(View.INVISIBLE); // New avatar view is invisible by default
 
         // We set the user details
-        setUserDetails();
+        checkIfUserExists();
 
         // We set button methods
         saveButton.setOnClickListener((View v) -> {
@@ -77,6 +86,34 @@ public class ProfileEditorActivity extends AppCompatActivity {
         });
 
         avatarExists();
+    }
+
+    private void checkIfUserExists() {
+        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("users").child(viewModel.getCurrentUserData().getValue().getUid());
+
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()) {
+                    //create new user
+                    UploadImageToFireBaseStorage(viewModel.getCurrentUserData().getValue().getPhotoUrl());
+                    SaveUserInfo();
+
+                    checkIfUserExists();
+                } else {
+                    Map<String,String> td=(HashMap<String, String>)dataSnapshot.getValue();
+
+                    User user = new User(td.get("id"), td.get("displayName"), td.get("imageUrl"), td.get("email"));
+                    setUserDetails(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        myRef.addListenerForSingleValueEvent(eventListener);
     }
 
     private void avatarExists() {
@@ -120,7 +157,6 @@ public class ProfileEditorActivity extends AppCompatActivity {
             newAvatarView.setVisibility(View.VISIBLE);
 
                 imageUri = data.getData();
-                imageUri = viewModel.getCurrentUserData().getValue().getPhotoUrl();
 
             newAvatarView.setImageURI(imageUri);
 
@@ -161,20 +197,15 @@ public class ProfileEditorActivity extends AppCompatActivity {
         });
     }
 
-    private void setUserDetails()  {
-        viewModel.getCurrentUserData().observe(this, user -> {
-            // We check if a user was returned
-            if (user != null) {
-                displayNameTextView.setText(user.getDisplayName());
-                emailTextView.setText(user.getEmail());
-            }
-        });
+    private void setUserDetails(User user)  {
+        nameEditText.setText(user.displayName);
+        emailTextView.setText(user.email);
     }
 
     private void saveButtonPressed() {
         // If the standard avatar view is visible, the user has not changed pictures
         // We check if the changed usernames
-        if (!(displayNameTextView.getText().equals(viewModel.getCurrentUserData().getValue().getDisplayName()))) {
+        if (!(nameEditText.getText().equals(viewModel.getCurrentUserData().getValue().getDisplayName()))) {
             SaveUserInfo();
         }
     }
@@ -200,7 +231,7 @@ public class ProfileEditorActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Uri uri) {
                 System.out.println("test; exists");
-                User user = new User(viewModel.getCurrentUserData().getValue().getUid(), "testName", uri.toString());
+                User user = new User(viewModel.getCurrentUserData().getValue().getUid(), nameEditText.getText().toString(), uri.toString(), viewModel.getCurrentUserData().getValue().getEmail());
                 myRef.setValue(user);
             }
         }).addOnFailureListener(new OnFailureListener() {
