@@ -4,21 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.MainActivityViewModel;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
     private MainActivityViewModel viewModel;
@@ -38,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
         viewProfileButton = findViewById(R.id.profileButton);
         fellowshipsButton = findViewById(R.id.fellowshipsButton);
         signOutButton = findViewById(R.id.signOutButton);
+
+        fellowshipsButton.setOnClickListener((View v) -> {
+            goToFellowships();
+        });
 
         viewProfileButton.setOnClickListener((View v) -> {
             goToProfileView();
@@ -65,6 +61,10 @@ public class MainActivity extends AppCompatActivity {
     private void goToProfileView() {
         viewModel.setViewProfileOf(new User(viewModel.getCurrentUser().getValue().getUid(), null, null, null));
         startActivity(new Intent(this, ProfileViewActivity.class));
+    }
+
+    private void goToFellowships() {
+        startActivity(new Intent(this, FellowshipsActivity.class));
     }
 
     public void signOut() {
