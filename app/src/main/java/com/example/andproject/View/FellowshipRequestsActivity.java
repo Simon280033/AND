@@ -1,17 +1,20 @@
 package com.example.andproject.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Pair;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.andproject.Entities.Fellowship;
+import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.FellowshipRequestViewModel;
-import com.example.andproject.ViewModel.FellowshipsViewModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,11 +28,10 @@ import java.util.HashMap;
 public class FellowshipRequestsActivity extends AppCompatActivity {
     private FellowshipRequestViewModel viewModel;
 
-    private HashMap<String, String> userIdsAndNames;
+    ArrayList<String> userIds;
+    private HashMap<String, User> users;
 
     private ListView requestingUsersList;
-
-    private ArrayList<String> requestingUsersIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +39,50 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(FellowshipRequestViewModel.class);
         setContentView(R.layout.activity_fellowship_requests);
 
-        requestingUsersIds = new ArrayList<>();
-        userIdsAndNames = new HashMap<>();
+        userIds = new ArrayList<>();
+        users = new HashMap<>();
 
         requestingUsersList = findViewById(R.id.requestingUsersList);
 
         getUsernamesByIds();
+
+        // When we select one of the requests
+        requestingUsersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                showOptionsForSelectedRequest(users.get(userIds.get(position)));
+            }
+        });
+    }
+
+    private void showOptionsForSelectedRequest(User user) {
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+
+        alertDialog.setTitle("Request options");
+
+        alertDialog.setMessage("Actions for Fellowship request by '" + user.displayName + "':");
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Accept request", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int id) {
+                //..
+            } });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "View user's profile", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // We set the info of the profile we are about to view
+                viewModel.setViewProfileOf(user);
+                // Then we change to it
+                goToProfileView();
+            }});
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //...
+            }});
+
+        alertDialog.show();
     }
 
     private void getUsernamesByIds() {
@@ -58,8 +98,10 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
                         String userId = ((HashMap<String, String>) issue.getValue()).get("id");
                         String displayName = ((HashMap<String, String>) issue.getValue()).get("displayName");
+                        String imageUrl = ((HashMap<String, String>) issue.getValue()).get("imageUrl");
+                        String email = ((HashMap<String, String>) issue.getValue()).get("email");
 
-                        userIdsAndNames.put(userId, displayName);
+                        users.put(userId, new User(userId, displayName, imageUrl, email));
                     }
                     // After we have gotten the list of ids/names, we get the requests for the fellowship
                     getRequestsForFellowship();
@@ -77,7 +119,7 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
         System.out.println("læs: getting");
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-        Query query = myRef.child("fellowships").orderByChild("id").equalTo(viewModel.getViewFellowshipInfo().first);
+        Query query = myRef.child("fellowshipRequests").orderByChild("fellowshipId").equalTo(viewModel.getViewFellowshipInfo().first);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -87,11 +129,12 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
                     // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
 
-                        String ownerId = ((HashMap<String, String>) issue.getValue()).get("creatorId");
-                        System.out.println("læs: " + ownerId);
+                        String requesterId = ((HashMap<String, String>) issue.getValue()).get("requesterId");
+                        System.out.println("læs: " + requesterId);
 
-                        String ownerName = userIdsAndNames.get(ownerId);
-                        listItems.add(ownerName);
+                        String requesterName = users.get(requesterId).displayName;
+                        listItems.add(requesterName);
+                        userIds.add(requesterId);
                     }
                     System.out.println("læs: " + listItems.size());
 
@@ -111,5 +154,9 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void goToProfileView() {
+        startActivity(new Intent(this, ProfileViewActivity.class));
     }
 }

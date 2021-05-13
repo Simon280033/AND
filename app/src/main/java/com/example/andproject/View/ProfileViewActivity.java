@@ -61,7 +61,7 @@ public class ProfileViewActivity extends AppCompatActivity {
         ratingsScrollView = findViewById(R.id.ratingsScrollView);
 
         cancelButton.setOnClickListener((View v) -> {
-            goToMainActivity();
+            onBackPressed();
         });
 
         setButtonAccordingToProfile();
@@ -73,7 +73,7 @@ public class ProfileViewActivity extends AppCompatActivity {
     private void setAvatar() {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-        myRef.child("users").child(viewModel.getCurrentUserData().getValue().getUid()).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        myRef.child("users").child(viewModel.getViewProfileOf().id).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
