@@ -1,14 +1,18 @@
 package com.example.andproject.Model;
 
 import android.app.Application;
+import android.util.Pair;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.Entities.Message;
 import com.example.andproject.Entities.User;
 import com.example.andproject.Mediator.MessageRepository;
 import com.example.andproject.Mediator.UserRepository;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.HashMap;
 
 public class Model {
 
@@ -20,7 +24,15 @@ public class Model {
     private final MessageRepository messageRepository;
 
     // Session data
+    // Profile view
     private User viewProfileOf;
+
+    // Fellowship view
+    private String fellowshipViewId;
+    private String ownerId;
+
+    // Joinable fellowships
+    private HashMap<String, Fellowship> joinableFellowships;
 
     private Model(Application app) {
         this.app = app;
@@ -38,6 +50,24 @@ public class Model {
         if(instance == null)
             instance = new Model(app);
         return instance;
+    }
+
+    public Fellowship getFellowshipById(String id) {
+        return joinableFellowships.get(id);
+    }
+
+    public void setJoinableFellowships(HashMap<String, Fellowship> joinableFellowships) {
+        this.joinableFellowships = joinableFellowships;
+    }
+
+    public void setViewFellowshipInfo(String fellowshipId, String ownerId) {
+        this.fellowshipViewId = fellowshipId;
+        this.ownerId = ownerId;
+    }
+
+    public Pair<String, String> getViewFellowshipInfo() {
+        Pair<String, String> ids = new Pair<String, String>(fellowshipViewId, ownerId);
+        return ids;
     }
 
     public void setViewProfileOf(User user) {

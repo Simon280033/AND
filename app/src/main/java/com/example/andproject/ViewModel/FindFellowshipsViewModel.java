@@ -5,10 +5,13 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.Entities.Message;
 import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.HashMap;
 
 public class FindFellowshipsViewModel extends AndroidViewModel {
     private final Model model;
@@ -16,6 +19,14 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
     public FindFellowshipsViewModel(Application app){
         super(app);
         model = Model.getInstance(app);
+    }
+
+    public void setViewFellowshipInfo(String fellowshipId, String ownerId) {
+        model.setViewFellowshipInfo(fellowshipId, ownerId);
+    }
+
+    public void setJoinableFellowships(HashMap<String, Fellowship> joinableFellowships) {
+        model.setJoinableFellowships(joinableFellowships);
     }
 
     public void setViewProfileOf(User user) {

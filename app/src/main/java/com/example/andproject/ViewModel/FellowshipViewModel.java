@@ -1,10 +1,12 @@
 package com.example.andproject.ViewModel;
 
 import android.app.Application;
+import android.util.Pair;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.Entities.Message;
 import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
@@ -16,6 +18,14 @@ public class FellowshipViewModel extends AndroidViewModel {
     public FellowshipViewModel(Application app){
         super(app);
         model = Model.getInstance(app);
+    }
+
+    public Pair<String, String> getViewFellowshipInfo() {
+        return model.getViewFellowshipInfo();
+    }
+
+    public Fellowship getFellowshipById(String id) {
+        return model.getFellowshipById(id);
     }
 
     public void setViewProfileOf(User user) {
