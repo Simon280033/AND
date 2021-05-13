@@ -11,9 +11,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.andproject.Entities.Fellowship;
+import com.example.andproject.Entities.FellowshipRequest;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.FellowshipViewModel;
 import com.google.firebase.database.DataSnapshot;
@@ -23,8 +25,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class FellowshipView extends AppCompatActivity {
 
@@ -32,7 +37,7 @@ public class FellowshipView extends AppCompatActivity {
 
     private TextView ownerNameTextView, webShopTextView, minimumAmountNeededTextView, paymentMethodTextView, deadlineTextView, distanceTextView;
     private ImageView ownerAvatarView;
-    private Button cancelJoinButton;
+    private Button cancelJoinButton, requestToJoinButton;
 
     private String fellowshipId;
 
@@ -52,9 +57,17 @@ public class FellowshipView extends AppCompatActivity {
 
         ownerAvatarView = findViewById(R.id.ownerAvatarView);
 
+        requestToJoinButton = findViewById(R.id.requestToJoinButton);
         cancelJoinButton = findViewById(R.id.cancelJoinButton);
 
         fellowshipId = viewModel.getViewFellowshipInfo().first;
+
+        requestToJoinButton.setOnClickListener((View v) -> {
+            requestJoin();
+            Toast.makeText(FellowshipView.this, "Requested to join Fellowship! Pending owner approval.",
+                    Toast.LENGTH_LONG).show();
+            onBackPressed();
+        });
 
         cancelJoinButton.setOnClickListener((View v) -> {
             onBackPressed();
@@ -104,5 +117,20 @@ public class FellowshipView extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void requestJoin() {
+        // We create the Fellowship request object
+        String requestId = UUID.randomUUID().toString(); // We create a random ID;
+        String fellowshipId = viewModel.getViewFellowshipInfo().first;
+        String requesterId = viewModel.getCurrentUser().getValue().getUid();
+        String requestDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        int isAccepted = 0;
+
+        FellowshipRequest fsr =  new FellowshipRequest(requestId, fellowshipId, requesterId, requestDate, isAccepted);
+        // We save it to the database
+        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowshipRequests").child(requestId);
+
+        myRef.setValue(fsr);
     }
 }
