@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -30,12 +32,17 @@ public class FellowshipsActivity extends AppCompatActivity {
 
     private ListView myFellowshipsList, joinedFellowshipsList;
 
+    private ArrayList<Pair<String, String>> myFellowshipsIds, joinedFellowshipsIds;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(FellowshipsViewModel.class);
-        //viewModel.init();
+
         setContentView(R.layout.activity_fellow_ships);
+
+        myFellowshipsIds = new ArrayList<>();
+        joinedFellowshipsIds = new ArrayList<>();
 
         newFellowshipButton = findViewById(R.id.newFellowshipButton);
         findFellowshipsButton = findViewById(R.id.findFellowshipsButton);
@@ -57,6 +64,24 @@ public class FellowshipsActivity extends AppCompatActivity {
             goToFindFellowships();
         });
 
+        // When we select one of our own fellowships
+        myFellowshipsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                // We set the ID of the fellowship we want to view in the model
+                viewModel.setViewFellowshipInfo(myFellowshipsIds.get(position).first, myFellowshipsIds.get(position).second);
+                // We check if a partner has already been accepted
+                boolean partnerFound = false; // WE JUST SET THIS TO FALSE UNTIL WE ENABLE IT
+                if (partnerFound) {
+                    // We go to the view page for the fellowship...
+                } else {
+                    // We go to the fellowship requests activity
+                    goToFellowshipRequests();
+                }
+            }
+        });
+
         getYourFellowships();
     }
 
@@ -72,10 +97,14 @@ public class FellowshipsActivity extends AppCompatActivity {
                     ArrayList<String> listItems=new ArrayList<String>();
                     // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
+                        String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("id");
+                        String ownerId = ((HashMap<String, String>) issue.getValue()).get("creatorId");
                         String webShop = ((HashMap<String, String>) issue.getValue()).get("webshop");
                         Long amountNeeded = ((HashMap<String, Long>) issue.getValue()).get("amountNeeded");
 
                         listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
+                        Pair<String, String> fellowshipInfo = new Pair<String, String>(fellowshipId, ownerId);
+                        myFellowshipsIds.add(fellowshipInfo);
                     }
                     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
                     ArrayAdapter<String> adapter =new ArrayAdapter<String>(FellowshipsActivity.this,
@@ -132,5 +161,9 @@ public class FellowshipsActivity extends AppCompatActivity {
 
     private void goToFindFellowships() {
         startActivity(new Intent(this, FindFellowshipsActivity.class));
+    }
+
+    private void goToFellowshipRequests() {
+        startActivity(new Intent(this, FellowshipRequestsActivity.class));
     }
 }

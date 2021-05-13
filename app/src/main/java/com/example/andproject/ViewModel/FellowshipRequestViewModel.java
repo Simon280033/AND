@@ -1,6 +1,7 @@
 package com.example.andproject.ViewModel;
 
 import android.app.Application;
+import android.util.Pair;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -10,16 +11,16 @@ import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
 import com.google.firebase.auth.FirebaseUser;
 
-public class FellowshipsViewModel extends AndroidViewModel {
+public class FellowshipRequestViewModel extends AndroidViewModel {
     private final Model model;
 
-    public FellowshipsViewModel(Application app){
+    public FellowshipRequestViewModel(Application app){
         super(app);
         model = Model.getInstance(app);
     }
 
-    public void setViewFellowshipInfo(String fellowshipId, String ownerId) {
-        model.setViewFellowshipInfo(fellowshipId, ownerId);
+    public Pair<String, String> getViewFellowshipInfo() {
+        return model.getViewFellowshipInfo();
     }
 
     public void setViewProfileOf(User user) {
