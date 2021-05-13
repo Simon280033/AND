@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
@@ -28,8 +29,9 @@ import java.util.HashMap;
 public class FellowshipRequestsActivity extends AppCompatActivity {
     private FellowshipRequestViewModel viewModel;
 
-    ArrayList<String> userIds;
+    private ArrayList<String> userIds;
     private HashMap<String, User> users;
+    private HashMap<String, String> requestIdByUserId;
 
     private ListView requestingUsersList;
 
@@ -41,6 +43,7 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
 
         userIds = new ArrayList<>();
         users = new HashMap<>();
+        requestIdByUserId = new HashMap<>();
 
         requestingUsersList = findViewById(R.id.requestingUsersList);
 
@@ -66,7 +69,10 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Accept request", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int id) {
-                //..
+                acceptRequestFromUser(user);
+                Toast.makeText(FellowshipRequestsActivity.this, "Successfully accepted Fellowship request!",
+                        Toast.LENGTH_LONG).show();
+                onBackPressed();
             } });
 
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "View user's profile", new DialogInterface.OnClickListener() {
@@ -128,13 +134,13 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
                     ArrayList<String> listItems=new ArrayList<String>();
                     // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
-
+                        String requestId = ((HashMap<String, String>) issue.getValue()).get("requestId");
                         String requesterId = ((HashMap<String, String>) issue.getValue()).get("requesterId");
-                        System.out.println("læs: " + requesterId);
-
                         String requesterName = users.get(requesterId).displayName;
+
                         listItems.add(requesterName);
                         userIds.add(requesterId);
+                        requestIdByUserId.put(requesterId, requestId);
                     }
                     System.out.println("læs: " + listItems.size());
 
@@ -154,6 +160,18 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void acceptRequestFromUser(User user) {
+        // We mark the request as accepted
+        String requestId = requestIdByUserId.get(user.id);
+
+        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+
+        myRef.child("fellowshipRequests").child(requestId).child("isAccepted").setValue(1);
+
+        // We set the partner ID in the Fellowship table
+        myRef.child("fellowships").child(viewModel.getViewFellowshipInfo().first).child("partnerId").setValue(user.id);
     }
 
     private void goToProfileView() {

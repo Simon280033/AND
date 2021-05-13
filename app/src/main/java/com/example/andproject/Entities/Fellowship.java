@@ -10,9 +10,10 @@ public class Fellowship {
     public String paymentMethod;
     public String deadline;
     public String pickupCoordinates;
+    public String partnerId;
     public int isCompleted; // We use this as a BIT - 1 = TRUE, 0 = FALSE
 
-    public Fellowship(String id, String creatorId, String webshop, String category, int amountNeeded, String paymentMethod, String deadline, String pickupCoordinates, int isCompleted) {
+    public Fellowship(String id, String creatorId, String webshop, String category, int amountNeeded, String paymentMethod, String deadline, String pickupCoordinates, String partnerId, int isCompleted) {
         this.id = id;
         this.creatorId = creatorId;
         this.webshop = webshop;
@@ -21,6 +22,7 @@ public class Fellowship {
         this.paymentMethod = paymentMethod;
         this.deadline = deadline;
         this.pickupCoordinates = pickupCoordinates;
+        this.partnerId = partnerId;
         this.isCompleted = isCompleted;
     }
 }

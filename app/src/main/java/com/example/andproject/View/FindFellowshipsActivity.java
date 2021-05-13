@@ -56,8 +56,6 @@ public class FindFellowshipsActivity extends AppCompatActivity {
                 goToFellowship();
             }
         });
-
-        getPendingRequestedFellowships();
     }
 
     // Whenever we return to this, we reload the listview
@@ -68,6 +66,8 @@ public class FindFellowshipsActivity extends AppCompatActivity {
     }
 
     private void getPendingRequestedFellowships() {
+        pendingsRequestsFellowships.clear();
+
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
         Query query = myRef.child("fellowshipRequests").orderByChild("requesterId").equalTo(viewModel.getCurrentUser().getValue().getUid());
@@ -81,10 +81,10 @@ public class FindFellowshipsActivity extends AppCompatActivity {
                             pendingsRequestsFellowships.add(fellowshipId);
                         }
                     }
-                    // After we have gotten the list of Fellowships we have already applied for, we get those we haven't
-                   getFellowships();
                 }
-                System.out.println("læs: " + pendingsRequestsFellowships.size());
+                System.out.println("læs: fellowships we already applied for: " + pendingsRequestsFellowships.size());
+                // After we have gotten the list of Fellowships we have already applied for, we get those we haven't
+                getFellowships();
             }
 
             @Override
@@ -95,6 +95,8 @@ public class FindFellowshipsActivity extends AppCompatActivity {
     }
 
     private void getFellowships() {
+        System.out.println("læs: getting joinable fellowships");
+
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
         Query query = myRef.child("fellowships");
@@ -108,9 +110,11 @@ public class FindFellowshipsActivity extends AppCompatActivity {
                     HashMap<String, Fellowship> joinableFellowships = new HashMap<>();
                     // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
+                        System.out.println("læs: fellowships exists");
                         // We check if it is our own fellowship, if it is, we don't add it to the list (Unless we have already applied for it)
-                        if (!(((HashMap<String, String>) issue.getValue()).get("creatorId").equals(viewModel.getCurrentUser().getValue().getUid()))) {
+                        if (!((HashMap<String, String>) issue.getValue()).get("creatorId").equals(viewModel.getCurrentUser().getValue().getUid())) {
                             String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("id");
+                            System.out.println("læs: fellowship id: " + fellowshipId);
                             if (!pendingsRequestsFellowships.contains(fellowshipId)) {
                                 String ownerId = ((HashMap<String, String>) issue.getValue()).get("creatorId");
                                 String webShop = ((HashMap<String, String>) issue.getValue()).get("webshop");
@@ -119,9 +123,10 @@ public class FindFellowshipsActivity extends AppCompatActivity {
                                 Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
                                 String paymentMethod = ((HashMap<String, String>) issue.getValue()).get("paymentMethod");
                                 String pickupCoordinates = ((HashMap<String, String>) issue.getValue()).get("pickupCoordinates");
+                                String partnerId = ((HashMap<String, String>) issue.getValue()).get("partnerId");
                                 Long amountNeeded = ((HashMap<String, Long>) issue.getValue()).get("amountNeeded");
 
-                                Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, Integer.parseInt("" + isCompleted));
+                                Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, Integer.parseInt("" + isCompleted));
                                 joinableFellowships.put(fellowshipId, fs);
 
                                 Pair<String, String> ids = new Pair<String, String>(fellowshipId, ownerId);
