@@ -26,7 +26,7 @@ import java.util.Map;
 public class FellowshipsActivity extends AppCompatActivity {
     private FellowshipsViewModel viewModel;
 
-    private Button newFellowshipButton;
+    private Button newFellowshipButton, findFellowshipsButton;
 
     private ListView myFellowshipsList, joinedFellowshipsList;
 
@@ -38,6 +38,7 @@ public class FellowshipsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fellow_ships);
 
         newFellowshipButton = findViewById(R.id.newFellowshipButton);
+        findFellowshipsButton = findViewById(R.id.findFellowshipsButton);
 
         myFellowshipsList = findViewById(R.id.myFellowshipsList);
 
@@ -50,6 +51,10 @@ public class FellowshipsActivity extends AppCompatActivity {
 
         newFellowshipButton.setOnClickListener((View v) -> {
             goToNewFellowship();
+        });
+
+        findFellowshipsButton.setOnClickListener((View v) -> {
+            goToFindFellowships();
         });
 
         getYourFellowships();
@@ -123,5 +128,9 @@ public class FellowshipsActivity extends AppCompatActivity {
 
     private void goToNewFellowship() {
         startActivity(new Intent(this, NewFellowshipActivity.class));
+    }
+
+    private void goToFindFellowships() {
+        startActivity(new Intent(this, FindFellowshipsActivity.class));
     }
 }

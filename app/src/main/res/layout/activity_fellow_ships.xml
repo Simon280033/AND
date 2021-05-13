@@ -8,13 +8,20 @@
     tools:context=".View.FellowshipsActivity">
 
     <Button
+        android:id="@+id/findFellowshipsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Find Fellowships" />
+
+    <Button
         android:id="@+id/newFellowshipButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:layout_marginLeft="100dp"
+        android:layout_marginTop="50dp"
         android:layout_weight="1"
-        android:text="New Fellowship request"
+        android:text="Create New Fellowship"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
