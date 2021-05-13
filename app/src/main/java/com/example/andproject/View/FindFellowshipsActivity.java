@@ -24,11 +24,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static java.nio.file.Paths.get;
+
 public class FindFellowshipsActivity extends AppCompatActivity {
     private FindFellowshipsViewModel viewModel;
 
     private ListView fellowshipsList;
 
+    private ArrayList<String> pendingsRequestsFellowships;
     private ArrayList<Pair<String, String>> fellowshipIdsList;
 
     @Override
@@ -36,6 +39,7 @@ public class FindFellowshipsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(FindFellowshipsViewModel.class);
 
+        pendingsRequestsFellowships = new ArrayList<>();
         fellowshipIdsList = new ArrayList<>();
 
         setContentView(R.layout.activity_find_fellowships);
@@ -53,7 +57,41 @@ public class FindFellowshipsActivity extends AppCompatActivity {
             }
         });
 
-        getFellowships();
+        getPendingRequestedFellowships();
+    }
+
+    // Whenever we return to this, we reload the listview
+    @Override
+    public void onResume(){
+        super.onResume();
+        getPendingRequestedFellowships();
+    }
+
+    private void getPendingRequestedFellowships() {
+        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+
+        Query query = myRef.child("fellowshipRequests").orderByChild("requesterId").equalTo(viewModel.getCurrentUser().getValue().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
+                        if (((HashMap<String, String>) issue.getValue()).get("requesterId").equals(viewModel.getCurrentUser().getValue().getUid())) {
+                            String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("fellowshipId");
+                            pendingsRequestsFellowships.add(fellowshipId);
+                        }
+                    }
+                    // After we have gotten the list of Fellowships we have already applied for, we get those we haven't
+                   getFellowships();
+                }
+                System.out.println("læs: " + pendingsRequestsFellowships.size());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void getFellowships() {
@@ -70,24 +108,26 @@ public class FindFellowshipsActivity extends AppCompatActivity {
                     HashMap<String, Fellowship> joinableFellowships = new HashMap<>();
                     // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        // We check if it is our own fellowship, if it is, we don't add it to the list
+                        // We check if it is our own fellowship, if it is, we don't add it to the list (Unless we have already applied for it)
                         if (!(((HashMap<String, String>) issue.getValue()).get("creatorId").equals(viewModel.getCurrentUser().getValue().getUid()))) {
                             String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("id");
-                            String ownerId = ((HashMap<String, String>) issue.getValue()).get("creatorId");
-                            String webShop = ((HashMap<String, String>) issue.getValue()).get("webshop");
-                            String category = ((HashMap<String, String>) issue.getValue()).get("category");
-                            String deadline = ((HashMap<String, String>) issue.getValue()).get("deadline");
-                            Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
-                            String paymentMethod = ((HashMap<String, String>) issue.getValue()).get("paymentMethod");
-                            String pickupCoordinates = ((HashMap<String, String>) issue.getValue()).get("pickupCoordinates");
-                            Long amountNeeded = ((HashMap<String, Long>) issue.getValue()).get("amountNeeded");
+                            if (!pendingsRequestsFellowships.contains(fellowshipId)) {
+                                String ownerId = ((HashMap<String, String>) issue.getValue()).get("creatorId");
+                                String webShop = ((HashMap<String, String>) issue.getValue()).get("webshop");
+                                String category = ((HashMap<String, String>) issue.getValue()).get("category");
+                                String deadline = ((HashMap<String, String>) issue.getValue()).get("deadline");
+                                Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
+                                String paymentMethod = ((HashMap<String, String>) issue.getValue()).get("paymentMethod");
+                                String pickupCoordinates = ((HashMap<String, String>) issue.getValue()).get("pickupCoordinates");
+                                Long amountNeeded = ((HashMap<String, Long>) issue.getValue()).get("amountNeeded");
 
-                            Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, Integer.parseInt("" + isCompleted));
-                            joinableFellowships.put(fellowshipId, fs);
+                                Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, Integer.parseInt("" + isCompleted));
+                                joinableFellowships.put(fellowshipId, fs);
 
-                            Pair<String, String> ids = new Pair<String, String>(fellowshipId, ownerId);
-                            fellowshipIdsList.add(ids);
-                            listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
+                                Pair<String, String> ids = new Pair<String, String>(fellowshipId, ownerId);
+                                fellowshipIdsList.add(ids);
+                                listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
+                            }
                         }
                     }
                     // We set the fellowship hashmap in the model
