@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.FellowshipsViewModel;
 import com.google.firebase.database.DataSnapshot;
@@ -23,7 +24,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class FellowshipsActivity extends AppCompatActivity {
     private FellowshipsViewModel viewModel;
@@ -32,7 +32,7 @@ public class FellowshipsActivity extends AppCompatActivity {
 
     private ListView myFellowshipsList, joinedFellowshipsList;
 
-    private ArrayList<Pair<String, String>> myFellowshipsIds, joinedFellowshipsIds;
+    private ArrayList<Fellowship> myFellowships, joinedFellowships;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +41,8 @@ public class FellowshipsActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_fellow_ships);
 
-        myFellowshipsIds = new ArrayList<>();
-        joinedFellowshipsIds = new ArrayList<>();
+        myFellowships = new ArrayList<>();
+        joinedFellowships = new ArrayList<>();
 
         newFellowshipButton = findViewById(R.id.newFellowshipButton);
         findFellowshipsButton = findViewById(R.id.findFellowshipsButton);
@@ -70,11 +70,11 @@ public class FellowshipsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // We set the ID of the fellowship we want to view in the model
-                viewModel.setViewFellowshipInfo(myFellowshipsIds.get(position).first, myFellowshipsIds.get(position).second);
+                viewModel.setViewFellowshipInfo(myFellowships.get(position).id, myFellowships.get(position).creatorId);
                 // We check if a partner has already been accepted
-                boolean partnerFound = false; // WE JUST SET THIS TO FALSE UNTIL WE ENABLE IT
-                if (partnerFound) {
+                if (!myFellowships.get(position).partnerId.equals("null")) {
                     // We go to the view page for the fellowship...
+                    System.out.println("læs: fellowship with partner selected!");
                 } else {
                     // We go to the fellowship requests activity
                     goToFellowshipRequests();
@@ -100,11 +100,18 @@ public class FellowshipsActivity extends AppCompatActivity {
                         String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("id");
                         String ownerId = ((HashMap<String, String>) issue.getValue()).get("creatorId");
                         String webShop = ((HashMap<String, String>) issue.getValue()).get("webshop");
+                        String category = ((HashMap<String, String>) issue.getValue()).get("category");
                         Long amountNeeded = ((HashMap<String, Long>) issue.getValue()).get("amountNeeded");
+                        String paymentMethod = ((HashMap<String, String>) issue.getValue()).get("paymentMethod");
+                        String deadline = ((HashMap<String, String>) issue.getValue()).get("deadline");
+                        String pickupCoordinates = ((HashMap<String, String>) issue.getValue()).get("pickupCoordinates");
+                        String partnerId = ((HashMap<String, String>) issue.getValue()).get("partnerId");
+                        Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
 
                         listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
-                        Pair<String, String> fellowshipInfo = new Pair<String, String>(fellowshipId, ownerId);
-                        myFellowshipsIds.add(fellowshipInfo);
+
+                        Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + isCompleted));
+                        myFellowships.add(fs);
                     }
                     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
                     ArrayAdapter<String> adapter =new ArrayAdapter<String>(FellowshipsActivity.this,
