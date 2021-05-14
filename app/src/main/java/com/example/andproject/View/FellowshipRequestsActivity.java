@@ -72,7 +72,7 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
                 acceptRequestFromUser(user);
                 Toast.makeText(FellowshipRequestsActivity.this, "Successfully accepted Fellowship request!",
                         Toast.LENGTH_LONG).show();
-                onBackPressed();
+                goToFellowshipsView();
             } });
 
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "View user's profile", new DialogInterface.OnClickListener() {
@@ -166,6 +166,9 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
         // We mark the request as accepted
         String requestId = requestIdByUserId.get(user.id);
 
+        viewModel.getViewFellowshipInfo().partnerId = user.id;
+
+        // We set it in the database
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
         myRef.child("fellowshipRequests").child(requestId).child("isAccepted").setValue(1);
@@ -177,4 +180,11 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
     private void goToProfileView() {
         startActivity(new Intent(this, ProfileViewActivity.class));
     }
+
+    private void goToFellowshipsView() {
+        startActivity(new Intent(this, FellowshipsActivity.class));
+        finish();
+    }
+
+
 }
