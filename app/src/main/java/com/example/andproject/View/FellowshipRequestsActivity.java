@@ -125,7 +125,7 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
         System.out.println("læs: getting");
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-        Query query = myRef.child("fellowshipRequests").orderByChild("fellowshipId").equalTo(viewModel.getViewFellowshipInfo().first);
+        Query query = myRef.child("fellowshipRequests").orderByChild("fellowshipId").equalTo(viewModel.getViewFellowshipInfo().id);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -171,7 +171,7 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
         myRef.child("fellowshipRequests").child(requestId).child("isAccepted").setValue(1);
 
         // We set the partner ID in the Fellowship table
-        myRef.child("fellowships").child(viewModel.getViewFellowshipInfo().first).child("partnerId").setValue(user.id);
+        myRef.child("fellowships").child(viewModel.getViewFellowshipInfo().id).child("partnerId").setValue(user.id);
     }
 
     private void goToProfileView() {

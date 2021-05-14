@@ -21,8 +21,8 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
         model = Model.getInstance(app);
     }
 
-    public void setViewFellowshipInfo(String fellowshipId, String ownerId) {
-        model.setViewFellowshipInfo(fellowshipId, ownerId);
+    public void setViewFellowshipInfo(Fellowship fs) {
+        model.setViewFellowshipInfo(fs);
     }
 
     public void setJoinableFellowships(HashMap<String, Fellowship> joinableFellowships) {

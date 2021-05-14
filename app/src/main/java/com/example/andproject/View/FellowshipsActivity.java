@@ -49,12 +49,7 @@ public class FellowshipsActivity extends AppCompatActivity {
 
         myFellowshipsList = findViewById(R.id.myFellowshipsList);
 
-        getYourFellowships();
-
         joinedFellowshipsList = findViewById(R.id.joinedFellowshipsList);
-
-        // Make it possible to join fellowships first!
-        // getJoinedFellowships();
 
         newFellowshipButton.setOnClickListener((View v) -> {
             goToNewFellowship();
@@ -64,17 +59,29 @@ public class FellowshipsActivity extends AppCompatActivity {
             goToFindFellowships();
         });
 
+        // When we select one of our joined fellowships
+        joinedFellowshipsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                // We set the ID of the fellowship we want to view in the model
+                viewModel.setViewFellowshipInfo(joinedFellowships.get(position));
+                // We check if a partner has already been accepted
+                goToFellowship();
+            }
+        });
+
         // When we select one of our own fellowships
         myFellowshipsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // We set the ID of the fellowship we want to view in the model
-                viewModel.setViewFellowshipInfo(myFellowships.get(position).id, myFellowships.get(position).creatorId);
+                viewModel.setViewFellowshipInfo(myFellowships.get(position));
                 // We check if a partner has already been accepted
                 if (!myFellowships.get(position).partnerId.equals("null")) {
                     // We go to the view page for the fellowship...
-                    System.out.println("læs: fellowship with partner selected!");
+                    goToFellowship();
                 } else {
                     // We go to the fellowship requests activity
                     goToFellowshipRequests();
@@ -83,6 +90,7 @@ public class FellowshipsActivity extends AppCompatActivity {
         });
 
         getYourFellowships();
+        getJoinedFellowships();
     }
 
     private void getYourFellowships() {
@@ -106,11 +114,14 @@ public class FellowshipsActivity extends AppCompatActivity {
                         String deadline = ((HashMap<String, String>) issue.getValue()).get("deadline");
                         String pickupCoordinates = ((HashMap<String, String>) issue.getValue()).get("pickupCoordinates");
                         String partnerId = ((HashMap<String, String>) issue.getValue()).get("partnerId");
+                        Long partnerPaid = ((HashMap<String, Long>) issue.getValue()).get("partnerPaid");
+                        Long paymentApproved = ((HashMap<String, Long>) issue.getValue()).get("paymentApproved");
+                        String receiptUrl = ((HashMap<String, String>) issue.getValue()).get("receiptUrl");
                         Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
 
                         listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
 
-                        Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + isCompleted));
+                        Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + isCompleted));
                         myFellowships.add(fs);
                     }
                     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
@@ -132,7 +143,7 @@ public class FellowshipsActivity extends AppCompatActivity {
     private void getJoinedFellowships() {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-        Query query = myRef.child("fellowships").orderByChild("creatorId").equalTo(viewModel.getCurrentUser().getValue().getUid());
+        Query query = myRef.child("fellowships").orderByChild("partnerId").equalTo(viewModel.getCurrentUser().getValue().getUid());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -141,10 +152,24 @@ public class FellowshipsActivity extends AppCompatActivity {
                     ArrayList<String> listItems=new ArrayList<String>();
                     // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
+                        String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("id");
+                        String ownerId = ((HashMap<String, String>) issue.getValue()).get("creatorId");
                         String webShop = ((HashMap<String, String>) issue.getValue()).get("webshop");
+                        String category = ((HashMap<String, String>) issue.getValue()).get("category");
                         Long amountNeeded = ((HashMap<String, Long>) issue.getValue()).get("amountNeeded");
+                        String paymentMethod = ((HashMap<String, String>) issue.getValue()).get("paymentMethod");
+                        String deadline = ((HashMap<String, String>) issue.getValue()).get("deadline");
+                        String pickupCoordinates = ((HashMap<String, String>) issue.getValue()).get("pickupCoordinates");
+                        String partnerId = ((HashMap<String, String>) issue.getValue()).get("partnerId");
+                        Long partnerPaid = ((HashMap<String, Long>) issue.getValue()).get("partnerPaid");
+                        Long paymentApproved = ((HashMap<String, Long>) issue.getValue()).get("paymentApproved");
+                        String receiptUrl = ((HashMap<String, String>) issue.getValue()).get("receiptUrl");
+                        Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
 
                         listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
+
+                        Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + isCompleted));
+                        joinedFellowships.add(fs);
                     }
                     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
                     ArrayAdapter<String> adapter =new ArrayAdapter<String>(FellowshipsActivity.this,
@@ -172,5 +197,9 @@ public class FellowshipsActivity extends AppCompatActivity {
 
     private void goToFellowshipRequests() {
         startActivity(new Intent(this, FellowshipRequestsActivity.class));
+    }
+
+    private void goToFellowship() {
+        startActivity(new Intent(this, FellowshipActivity.class));
     }
 }

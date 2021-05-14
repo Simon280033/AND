@@ -32,7 +32,7 @@ public class FindFellowshipsActivity extends AppCompatActivity {
     private ListView fellowshipsList;
 
     private ArrayList<String> pendingsRequestsFellowships;
-    private ArrayList<Pair<String, String>> fellowshipIdsList;
+    private ArrayList<Fellowship> fellowshipsDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class FindFellowshipsActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(FindFellowshipsViewModel.class);
 
         pendingsRequestsFellowships = new ArrayList<>();
-        fellowshipIdsList = new ArrayList<>();
+        fellowshipsDetails = new ArrayList<>();
 
         setContentView(R.layout.activity_find_fellowships);
 
@@ -52,7 +52,7 @@ public class FindFellowshipsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // We set the ID of the fellowship we want to view in the model
-                viewModel.setViewFellowshipInfo(fellowshipIdsList.get(position).first, fellowshipIdsList.get(position).second);
+                viewModel.setViewFellowshipInfo(fellowshipsDetails.get(position));
                 goToFellowship();
             }
         });
@@ -116,21 +116,26 @@ public class FindFellowshipsActivity extends AppCompatActivity {
                             String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("id");
                             System.out.println("læs: fellowship id: " + fellowshipId);
                             if (!pendingsRequestsFellowships.contains(fellowshipId)) {
+                                String id = ((HashMap<String, String>) issue.getValue()).get("id");
                                 String ownerId = ((HashMap<String, String>) issue.getValue()).get("creatorId");
                                 String webShop = ((HashMap<String, String>) issue.getValue()).get("webshop");
                                 String category = ((HashMap<String, String>) issue.getValue()).get("category");
-                                String deadline = ((HashMap<String, String>) issue.getValue()).get("deadline");
-                                Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
+                                Long amountNeeded = ((HashMap<String, Long>) issue.getValue()).get("amountNeeded");
                                 String paymentMethod = ((HashMap<String, String>) issue.getValue()).get("paymentMethod");
+                                String deadline = ((HashMap<String, String>) issue.getValue()).get("deadline");
                                 String pickupCoordinates = ((HashMap<String, String>) issue.getValue()).get("pickupCoordinates");
                                 String partnerId = ((HashMap<String, String>) issue.getValue()).get("partnerId");
-                                Long amountNeeded = ((HashMap<String, Long>) issue.getValue()).get("amountNeeded");
+                                Long partnerPaid = ((HashMap<String, Long>) issue.getValue()).get("partnerPaid");
+                                Long paymentApproved = ((HashMap<String, Long>) issue.getValue()).get("paymentApproved");
+                                String receiptUrl = ((HashMap<String, String>) issue.getValue()).get("receiptUrl");
+                                Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
 
-                                Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, Integer.parseInt("" + isCompleted));
+                                listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
+
+                                Fellowship fs = new Fellowship(id, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + isCompleted));
                                 joinableFellowships.put(fellowshipId, fs);
 
-                                Pair<String, String> ids = new Pair<String, String>(fellowshipId, ownerId);
-                                fellowshipIdsList.add(ids);
+                                fellowshipsDetails.add(fs);
                                 listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
                             }
                         }
@@ -154,7 +159,7 @@ public class FindFellowshipsActivity extends AppCompatActivity {
     }
 
     private void goToFellowship() {
-        startActivity(new Intent(this, FellowshipView.class));
+        startActivity(new Intent(this, FellowshipJoinActivity.class));
     }
 
 }

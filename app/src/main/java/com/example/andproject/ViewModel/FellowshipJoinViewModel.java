@@ -12,16 +12,20 @@ import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
 import com.google.firebase.auth.FirebaseUser;
 
-public class FellowshipRequestViewModel extends AndroidViewModel {
+public class FellowshipJoinViewModel extends AndroidViewModel {
     private final Model model;
 
-    public FellowshipRequestViewModel(Application app){
+    public FellowshipJoinViewModel(Application app){
         super(app);
         model = Model.getInstance(app);
     }
 
     public Fellowship getViewFellowshipInfo() {
         return model.getViewFellowshipInfo();
+    }
+
+    public Fellowship getFellowshipById(String id) {
+        return model.getFellowshipById(id);
     }
 
     public void setViewProfileOf(User user) {

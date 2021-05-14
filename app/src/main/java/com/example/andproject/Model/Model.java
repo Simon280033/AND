@@ -28,8 +28,7 @@ public class Model {
     private User viewProfileOf;
 
     // Fellowship view
-    private String fellowshipViewId;
-    private String ownerId;
+    private Fellowship fellowship;
 
     // Joinable fellowships
     private HashMap<String, Fellowship> joinableFellowships;
@@ -60,14 +59,12 @@ public class Model {
         this.joinableFellowships = joinableFellowships;
     }
 
-    public void setViewFellowshipInfo(String fellowshipId, String ownerId) {
-        this.fellowshipViewId = fellowshipId;
-        this.ownerId = ownerId;
+    public void setViewFellowshipInfo(Fellowship fs) {
+        this.fellowship = fs;
     }
 
-    public Pair<String, String> getViewFellowshipInfo() {
-        Pair<String, String> ids = new Pair<String, String>(fellowshipViewId, ownerId);
-        return ids;
+    public Fellowship getViewFellowshipInfo() {
+        return fellowship;
     }
 
     public void setViewProfileOf(User user) {
