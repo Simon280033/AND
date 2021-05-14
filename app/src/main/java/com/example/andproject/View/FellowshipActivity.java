@@ -87,11 +87,30 @@ public class FellowshipActivity extends AppCompatActivity {
             markAsDoneMethodForUser();
         });
 
+        paymentStatusButton.setOnClickListener((View v) -> {
+            paymentButtonMethod();
+        });
+
         setPartnerInfo();
         setFirmProperties();
         setPaymentProperties();
         setReceiptProperties();
         setMarkAsDoneProperties();
+    }
+
+    private void paymentButtonMethod() {
+        if (ownerOfFellowship) {
+            if (viewModel.getViewFellowshipInfo().partnerPaid == 1 && viewModel.getViewFellowshipInfo().paymentApproved == 0) {
+                viewModel.getViewFellowshipInfo().approvePayment();
+            }
+        } else {
+            if (viewModel.getViewFellowshipInfo().partnerPaid == 0) {
+                viewModel.getViewFellowshipInfo().claimPayment();
+            } else if (viewModel.getViewFellowshipInfo().partnerPaid == 1) {
+                viewModel.getViewFellowshipInfo().retractPaymentClaim();
+            }
+        }
+        setPaymentProperties();
     }
 
     private void markAsDoneMethodForUser() {
@@ -142,9 +161,9 @@ public class FellowshipActivity extends AppCompatActivity {
         }
 
         if (ownerOfFellowship) {
-            viewModel.getViewFellowshipInfo().ownerCompleted = bit;
+            viewModel.getViewFellowshipInfo().setOwnerCompletionStatus(bit);
         } else {
-            viewModel.getViewFellowshipInfo().partnerCompleted = bit;
+            viewModel.getViewFellowshipInfo().setPartnerCompletionStatus(bit);
         }
         setMarkAsDoneProperties();
     }
@@ -159,9 +178,12 @@ public class FellowshipActivity extends AppCompatActivity {
             completionStatusTextView.setText("Both parties have marked the Fellowship as completed!");
             markAsDoneButton.setEnabled(false);
 
+            viewModel.incrementCompletionCounterForBothUsers(viewModel.getViewFellowshipInfo().creatorId, viewModel.getViewFellowshipInfo().partnerId);
+
+            viewModel.getViewFellowshipInfo().setFellowshipAsCompleted();
+
             Toast.makeText(FellowshipActivity.this, "Fellowship done!",
                     Toast.LENGTH_LONG).show();
-            onBackPressed();
         }
         if (ownerOfFellowship) {
             setMarkAsDonePropertiesForOwner();
@@ -302,6 +324,7 @@ public class FellowshipActivity extends AppCompatActivity {
         paymentStatusHeader.setText("Partner payment status:");
         if (viewModel.getViewFellowshipInfo().partnerPaid == 1) {
             paymentStatusTextView.setText("Paid. Please approve if received...");
+            paymentStatusButton.setEnabled(true);
             if (viewModel.getViewFellowshipInfo().paymentApproved == 1) {
                 paymentStatusTextView.setText("Payment approved.");
                 paymentStatusButton.setEnabled(false);

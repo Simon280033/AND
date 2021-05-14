@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.andproject.Entities.CompletedCounter;
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.ProfileEditorViewModel;
@@ -226,15 +227,18 @@ public class ProfileEditorActivity extends AppCompatActivity {
         storageRef.child("images/avatars/" + viewModel.getCurrentUserData().getValue().getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                System.out.println("test; exists");
                 User user = new User(viewModel.getCurrentUserData().getValue().getUid(), nameEditText.getText().toString(), uri.toString(), viewModel.getCurrentUserData().getValue().getEmail());
                 myRef.setValue(user);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                System.out.println("test; exists not");
+
             }
         });
+
+        // We also create a table for the Fellowships-completed counter
+        DatabaseReference counterRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("completedCounter").child(viewModel.getCurrentUserData().getValue().getUid());
+        counterRef.setValue(new CompletedCounter(viewModel.getCurrentUserData().getValue().getUid(), 0));
     }
 }

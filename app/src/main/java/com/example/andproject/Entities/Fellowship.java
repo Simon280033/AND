@@ -39,6 +39,54 @@ public class Fellowship {
         this.isCompleted = isCompleted;
     }
 
+    public void setFellowshipAsCompleted() {
+        this.isCompleted = 1;
+
+        // We update it in the database
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(this.id);
+        mDatabase.child("isCompleted").setValue(1);
+    }
+
+    public void setOwnerCompletionStatus(int completed) {
+        this.ownerCompleted = completed;
+
+        // We update it in the database
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(this.id);
+        mDatabase.child("ownerCompleted").setValue(completed);
+    }
+
+    public void setPartnerCompletionStatus(int completed) {
+        this.partnerCompleted = completed;
+
+        // We update it in the database
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(this.id);
+        mDatabase.child("partnerCompleted").setValue(completed);
+    }
+
+    public void approvePayment() {
+        this.paymentApproved = 1;
+
+        // We update it in the database
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(this.id);
+        mDatabase.child("paymentApproved").setValue(1);
+    }
+
+    public void claimPayment() {
+        this.partnerPaid = 1;
+
+        // We update it in the database
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(this.id);
+        mDatabase.child("partnerPaid").setValue(1);
+    }
+
+    public void retractPaymentClaim() {
+        this.partnerPaid = 0;
+
+        // We update it in the database
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(this.id);
+        mDatabase.child("partnerPaid").setValue(0);
+    }
+
     public void setReceiptUrl(String receiptUrl) {
         this.receiptUrl = receiptUrl;
 

@@ -1,7 +1,6 @@
 package com.example.andproject.ViewModel;
 
 import android.app.Application;
-import android.util.Pair;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -17,6 +16,10 @@ public class FellowshipViewModel extends AndroidViewModel {
     public FellowshipViewModel(Application app){
         super(app);
         model = Model.getInstance(app);
+    }
+
+    public void incrementCompletionCounterForBothUsers(String ownerId, String partnerId) {
+        model.incrementCompletionCounterForBothUsers(ownerId, partnerId);
     }
 
     public Fellowship getViewFellowshipInfo() {
