@@ -165,8 +165,8 @@ public class ProfileEditorActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
-        StorageReference riversRef = storageRef.child("images/avatars/" + viewModel.getCurrentUserData().getValue().getUid());
-        UploadTask uploadTask = riversRef.putFile(imageUri);
+        StorageReference avatarsRef = storageRef.child("images/avatars/" + viewModel.getCurrentUserData().getValue().getUid());
+        UploadTask uploadTask = avatarsRef.putFile(imageUri);
 
         Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
@@ -176,7 +176,7 @@ public class ProfileEditorActivity extends AppCompatActivity {
                 }
 
                 // Continue with the task to get the download URL
-                return riversRef.getDownloadUrl();
+                return avatarsRef.getDownloadUrl();
             }
         }).addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override

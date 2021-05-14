@@ -1,5 +1,8 @@
 package com.example.andproject.Entities;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class Fellowship {
 
     public String id;
@@ -30,5 +33,13 @@ public class Fellowship {
         this.paymentApproved = paymentApproved;
         this.receiptUrl = receiptUrl;
         this.isCompleted = isCompleted;
+    }
+
+    public void setReceiptUrl(String receiptUrl) {
+        this.receiptUrl = receiptUrl;
+
+        // We update it in the database
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(this.id);
+        mDatabase.child("receiptUrl").setValue(receiptUrl);
     }
 }
