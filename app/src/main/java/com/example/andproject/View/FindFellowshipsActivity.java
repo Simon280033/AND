@@ -96,6 +96,8 @@ public class FindFellowshipsActivity extends AppCompatActivity {
 
     private void getFellowships() {
         System.out.println("læs: getting joinable fellowships");
+        // We clear the spinner
+        fellowshipsList.setAdapter(null);
 
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
@@ -138,7 +140,6 @@ public class FindFellowshipsActivity extends AppCompatActivity {
                                 joinableFellowships.put(fellowshipId, fs);
 
                                 fellowshipsDetails.add(fs);
-                                listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
                             }
                         }
                     }

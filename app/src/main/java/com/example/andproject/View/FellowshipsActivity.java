@@ -121,7 +121,11 @@ public class FellowshipsActivity extends AppCompatActivity {
                         Long partnerCompleted = ((HashMap<String, Long>) issue.getValue()).get("partnerCompleted");
                         Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
 
-                        listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
+                        String completionStatus = "NO";
+                        if (isCompleted > 0) {
+                            completionStatus = "YES";
+                        }
+                        listItems.add("Web shop: " + webShop + ", amount needed: " + amountNeeded + " DKK, completed: " + completionStatus);
 
                         Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + ownerCompleted), (int) Integer.parseInt("" + partnerCompleted), (int) Integer.parseInt("" + isCompleted));
                         myFellowships.add(fs);
@@ -170,7 +174,11 @@ public class FellowshipsActivity extends AppCompatActivity {
                         Long partnerCompleted = ((HashMap<String, Long>) issue.getValue()).get("partnerCompleted");
                         Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
 
-                        listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
+                        String completionStatus = "NO";
+                        if (isCompleted > 0) {
+                            completionStatus = "YES";
+                        }
+                        listItems.add("Web shop: " + webShop + ", amount needed: " + amountNeeded + " DKK, completed: " + completionStatus);
 
                         Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + ownerCompleted), (int) Integer.parseInt("" + partnerCompleted), (int) Integer.parseInt("" + isCompleted));
                         joinedFellowships.add(fs);

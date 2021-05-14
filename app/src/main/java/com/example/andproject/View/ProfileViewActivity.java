@@ -24,11 +24,15 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -68,6 +72,34 @@ public class ProfileViewActivity extends AppCompatActivity {
 
         // We set the avatar
         setAvatar();
+        setShipsCounterTextView();
+    }
+
+    private void setShipsCounterTextView()  {
+        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+
+        Query ownerQuery = myRef.child("completedCounter").orderByChild("userId").equalTo(viewModel.getViewProfileOf().id);
+        ownerQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
+                    ArrayList<String> listItems=new ArrayList<String>();
+                    // dataSnapshot is the "issue" node with all children with id 0
+                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
+                        Long currentAmount = ((HashMap<String, Long>) issue.getValue()).get("count");
+                        int newAmount = (int) Integer.parseInt("" + currentAmount);
+
+                        shipsCounterTextView.setText("" + newAmount);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void setAvatar() {
