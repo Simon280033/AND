@@ -128,11 +128,13 @@ public class FindFellowshipsActivity extends AppCompatActivity {
                                 Long partnerPaid = ((HashMap<String, Long>) issue.getValue()).get("partnerPaid");
                                 Long paymentApproved = ((HashMap<String, Long>) issue.getValue()).get("paymentApproved");
                                 String receiptUrl = ((HashMap<String, String>) issue.getValue()).get("receiptUrl");
+                                Long ownerCompleted = ((HashMap<String, Long>) issue.getValue()).get("ownerCompleted");
+                                Long partnerCompleted = ((HashMap<String, Long>) issue.getValue()).get("partnerCompleted");
                                 Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
 
                                 listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
 
-                                Fellowship fs = new Fellowship(id, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + isCompleted));
+                                Fellowship fs = new Fellowship(id, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + ownerCompleted), (int) Integer.parseInt("" + partnerCompleted), (int) Integer.parseInt("" + isCompleted));
                                 joinableFellowships.put(fellowshipId, fs);
 
                                 fellowshipsDetails.add(fs);

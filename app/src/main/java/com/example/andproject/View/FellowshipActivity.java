@@ -2,10 +2,12 @@ package com.example.andproject.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.FellowshipViewModel;
 import com.example.andproject.ViewModel.FindFellowshipsViewModel;
@@ -45,9 +48,9 @@ public class FellowshipActivity extends AppCompatActivity {
 
     private ImageView partnerAvatarView;
 
-    private TextView partnerNameTextView, webShopTextView, minimumAmountNeededTextView, paymentMethodTextView, paymentStatusHeader, paymentStatusTextView, receiptNameTextView;
+    private TextView partnerNameTextView, webShopTextView, minimumAmountNeededTextView, paymentMethodTextView, paymentStatusHeader, paymentStatusTextView, receiptNameTextView, completionStatusTextView;
 
-    private Button paymentStatusButton, receiptButton;
+    private Button paymentStatusButton, receiptButton, markAsDoneButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,15 +76,122 @@ public class FellowshipActivity extends AppCompatActivity {
         paymentStatusButton = findViewById(R.id.paymentStatusButton);
         receiptNameTextView = findViewById(R.id.receiptNameTextView);
         receiptButton = findViewById(R.id.receiptButton);
+        markAsDoneButton = findViewById(R.id.markAsDoneButton);
+        completionStatusTextView = findViewById(R.id.completionStatusTextView);
 
         receiptButton.setOnClickListener((View v) -> {
             receiptMethodForUser();
+        });
+
+        markAsDoneButton.setOnClickListener((View v) -> {
+            markAsDoneMethodForUser();
         });
 
         setPartnerInfo();
         setFirmProperties();
         setPaymentProperties();
         setReceiptProperties();
+        setMarkAsDoneProperties();
+    }
+
+    private void markAsDoneMethodForUser() {
+        if (ownerOfFellowship) {
+            if (viewModel.getViewFellowshipInfo().ownerCompleted == 0) {
+                showOptionsForMarkingAsDone(true);
+            } else {
+                showOptionsForMarkingAsDone(false);
+            }
+        } else {
+            if (viewModel.getViewFellowshipInfo().partnerCompleted == 0) {
+                showOptionsForMarkingAsDone(true);
+            } else {
+                showOptionsForMarkingAsDone(false);
+            }
+        }
+    }
+
+    private void showOptionsForMarkingAsDone(boolean markAsDone) {
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+
+        if (markAsDone) {
+            alertDialog.setTitle("Mark Fellowship as done");
+            alertDialog.setMessage("Are you sure you want to mark this Fellowship as done?");
+        } else {
+            alertDialog.setTitle("Retract mark");
+            alertDialog.setMessage("Are you sure you want to un-mark this Fellowship as done?");
+        }
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int id) {
+                markAsDoneMethod(markAsDone);
+            } });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //...
+            }});
+
+        alertDialog.show();
+    }
+
+    private void markAsDoneMethod(boolean markAsDone) {
+        int bit = 0;
+        if (markAsDone) {
+            bit = 1;
+        }
+
+        if (ownerOfFellowship) {
+            viewModel.getViewFellowshipInfo().ownerCompleted = bit;
+        } else {
+            viewModel.getViewFellowshipInfo().partnerCompleted = bit;
+        }
+        setMarkAsDoneProperties();
+    }
+
+    private void setMarkAsDoneProperties() {
+        if (viewModel.getViewFellowshipInfo().partnerPaid == 1 && viewModel.getViewFellowshipInfo().paymentApproved == 1) {
+            markAsDoneButton.setEnabled(true);
+        } else {
+            markAsDoneButton.setEnabled(false);
+        }
+        if (viewModel.getViewFellowshipInfo().partnerCompleted == 1 && viewModel.getViewFellowshipInfo().ownerCompleted == 1) {
+            completionStatusTextView.setText("Both parties have marked the Fellowship as completed!");
+            markAsDoneButton.setEnabled(false);
+
+            Toast.makeText(FellowshipActivity.this, "Fellowship done!",
+                    Toast.LENGTH_LONG).show();
+            onBackPressed();
+        }
+        if (ownerOfFellowship) {
+            setMarkAsDonePropertiesForOwner();
+        } else {
+            setMarkAsDonePropertiesForPartner();
+        }
+    }
+
+    private void setMarkAsDonePropertiesForOwner() {
+        markAsDoneButton.setEnabled(true);
+        if (viewModel.getViewFellowshipInfo().ownerCompleted == 1) {
+            completionStatusTextView.setText("You have marked the Fellowship as completed. Partner pending...");
+            markAsDoneButton.setText("RETRACT COMPLETION");
+        }
+        if (viewModel.getViewFellowshipInfo().partnerCompleted == 1) {
+            completionStatusTextView.setText("Partner has marked the Fellowship as completed. Response pending...");
+            markAsDoneButton.setText("MARK FELLOWSHIP AS COMPLETED");
+        }
+    }
+
+    private void setMarkAsDonePropertiesForPartner() {
+        markAsDoneButton.setEnabled(true);
+        if (viewModel.getViewFellowshipInfo().partnerCompleted == 1) {
+            completionStatusTextView.setText("You have marked the Fellowship as completed. Partner pending...");
+            markAsDoneButton.setText("RETRACT COMPLETION");
+        }
+        if (viewModel.getViewFellowshipInfo().ownerCompleted == 1) {
+            completionStatusTextView.setText("Partner has marked the Fellowship as completed. Response pending...");
+            markAsDoneButton.setText("MARK FELLOWSHIP AS COMPLETED");
+        }
     }
 
     private void receiptMethodForUser() {

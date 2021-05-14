@@ -166,9 +166,11 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
         int partnerPaid = 0;
         int paymentApproved = 0;
         String receiptUrl = "null";
+        int ownerCompleted = 0;
+        int partnerCompleted = 0;
         int isCompleted = 0; // We use this as a BIT - 1 = TRUE, 0 = FALSE
 
-        Fellowship fs = new Fellowship(id, creatorId, webshop, category, amountNeeded, paymentMethod, deadline, latAndLong, partnerId, partnerPaid, paymentApproved, receiptUrl, isCompleted);
+        Fellowship fs = new Fellowship(id, creatorId, webshop, category, amountNeeded, paymentMethod, deadline, latAndLong, partnerId, partnerPaid, paymentApproved, receiptUrl, ownerCompleted, partnerCompleted, isCompleted);
 
         // We save it to the database
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(id);
