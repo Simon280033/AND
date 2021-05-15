@@ -1,20 +1,17 @@
 package com.example.andproject.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,40 +25,19 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.andproject.Entities.Fellowship;
-import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.NewFellowshipViewModel;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-
-import static com.google.android.material.internal.ContextUtils.getActivity;
 
 public class NewFellowshipActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, DatePickerDialog.OnDateSetListener {
 
@@ -78,19 +54,29 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
         viewModel.init();
         setContentView(R.layout.activity_new_fellowship);
 
-        webshopSpinner = findViewById(R.id.webshopSpinner);
-        categorySpinner = findViewById(R.id.categorySpinner);
-        paymentMethodSpinner = findViewById(R.id.paymentMethodSpinner);
+        findViews();
 
-        amountNeededEditText = findViewById(R.id.amountNeededEditText);
-        deadlineEditText = findViewById(R.id.deadlineEditText);
-        locationEditText = findViewById(R.id.locationEditText);
+        setButtonActions();
 
-        deadlinePickButton = findViewById(R.id.deadlinePickButton);
-        createFellowshipButton = findViewById(R.id.createFellowshipButton);
-        cancelCreateFellowshipButton = findViewById(R.id.cancelCreateFellowshipButton);
-        getLocationButton = findViewById(R.id.getLocationButton);
+        // We set the date/location edit texts uneditable
+        deadlineEditText.setEnabled(false);
+        locationEditText.setEnabled(false);
 
+        setUi();
+
+        setDatePicker();
+
+        bindButtonAvailability();
+    }
+
+    private void setUi() {
+        // We bind the UI elements
+        bindUiElements();
+        // We refresh them
+        viewModel.refreshSpinnerLists();
+    }
+
+    private void setButtonActions() {
         cancelCreateFellowshipButton.setOnClickListener((View v) -> {
             goToFellowships();
         });
@@ -103,53 +89,25 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
         });
 
         getLocationButton.setOnClickListener((View v) -> {
-            getUsersLocation();
+            viewModel.getPickupLocation();
+            viewModel.getUsersLocation(this);
             createFellowshipButton.setEnabled(allInfoEntered());
         });
-
-        // We set the date/location edit texts uneditable
-        deadlineEditText.setEnabled(false);
-        locationEditText.setEnabled(false);
-
-        setWebshopSpinner();
-        setCategorySpinner();
-        setPaymentMethodSpinner();
-        setDatePicker();
-
-        bindButtonAvailability();
     }
 
-    // YOU HAVE MANUALLY ENABLED LOCATIONS FOR APP!!!! FIND A WAY TO PROMPT USER TO ENABLE IT
-    private void getUsersLocation() {
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+    private void findViews() {
+        webshopSpinner = findViewById(R.id.webshopSpinner);
+        categorySpinner = findViewById(R.id.categorySpinner);
+        paymentMethodSpinner = findViewById(R.id.paymentMethodSpinner);
 
-        String latAndLong = null;
+        amountNeededEditText = findViewById(R.id.amountNeededEditText);
+        deadlineEditText = findViewById(R.id.deadlineEditText);
+        locationEditText = findViewById(R.id.locationEditText);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            System.out.println("læs: no perms");
-            return;
-        }
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
-                            locationEditText.setEnabled(true);
-                            locationEditText.setText(location.getLatitude() + ", " + location.getLongitude());
-                            locationEditText.setEnabled(false);
-                        }
-                    }
-                });
-
+        deadlinePickButton = findViewById(R.id.deadlinePickButton);
+        createFellowshipButton = findViewById(R.id.createFellowshipButton);
+        cancelCreateFellowshipButton = findViewById(R.id.cancelCreateFellowshipButton);
+        getLocationButton = findViewById(R.id.getLocationButton);
     }
 
     private void createNewFellowShip() {
@@ -172,10 +130,7 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
 
         Fellowship fs = new Fellowship(id, creatorId, webshop, category, amountNeeded, paymentMethod, deadline, latAndLong, partnerId, partnerPaid, paymentApproved, receiptUrl, ownerCompleted, partnerCompleted, isCompleted);
 
-        // We save it to the database
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(id);
-
-        myRef.setValue(fs);
+        viewModel.createNewFellowShip(fs);
     }
 
     // This method binds the create buttons-availability to whether or not all info is filled
@@ -255,110 +210,72 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
         });
     }
 
-    private void setWebshopSpinner() {
-        // Spinner click listener
-        webshopSpinner.setOnItemSelectedListener(this);
-
-        // Spinner Drop down elements
-        ArrayList<String> webshops = new ArrayList<String>();
-
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("webshops");
-
-        ValueEventListener eventListener = new ValueEventListener() {
+    // This method binds the View's UI elements to the properties in the viewmodel
+    private void bindUiElements() {
+        // We bind the webshop spinner
+        final Observer<ArrayList<String>> webShopObserver = new Observer<ArrayList<String>>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists()) {
+            public void onChanged(@Nullable final ArrayList<String> newValue) {
+                // Creating adapter for spinner
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(NewFellowshipActivity.this, android.R.layout.simple_spinner_item, newValue);
 
-                } else {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        webshops.add(ds.getKey());
-                    }
+                // Drop down layout style - list view with radio button
+                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                    // Creating adapter for spinner
-                    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(NewFellowshipActivity.this, android.R.layout.simple_spinner_item, webshops);
-
-                    // Drop down layout style - list view with radio button
-                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                    // attaching data adapter to spinner
-                    webshopSpinner.setAdapter(dataAdapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+                // attaching data adapter to spinner
+                webshopSpinner.setAdapter(dataAdapter);
             }
         };
-        myRef.addListenerForSingleValueEvent(eventListener);
-    }
 
-    private ArrayList<String> getWebshops(ArrayList<String> webshops) {
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("webshops");
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getWebShopsList().observe(this, webShopObserver);
 
-        ValueEventListener eventListener = new ValueEventListener() {
+        // We bind the categories spinner
+        final Observer<ArrayList<String>> categoriesObserver = new Observer<ArrayList<String>>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists()) {
+            public void onChanged(@Nullable final ArrayList<String> newValue) {
+                // Creating adapter for spinner
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(NewFellowshipActivity.this, android.R.layout.simple_spinner_item, newValue);
 
-                } else {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        webshops.add(ds.getKey());
-                    }
-                }
-            }
+                // Drop down layout style - list view with radio button
+                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+                // attaching data adapter to spinner
+                categorySpinner.setAdapter(dataAdapter);
             }
         };
-        myRef.addListenerForSingleValueEvent(eventListener);
-        return webshops;
-    }
 
-    private void setCategorySpinner() {
-        // Spinner click listener
-        categorySpinner.setOnItemSelectedListener(this);
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getCategoriesList().observe(this, categoriesObserver);
 
-        // Spinner Drop down elements
-        ArrayList<String> categories = new ArrayList<String>();
-        categories.add("Other");
-        categories.add("Clothing");
-        categories.add("Electronics");
-        categories.add("Furniture");
-        categories.add("Toys");
-        categories.add("Outdoor");
-        categories.add("Tools");
-        categories.add("Edible");
+        // We bind the payment methods spinner
+        final Observer<ArrayList<String>> paymentMethodsObserver = new Observer<ArrayList<String>>() {
+            @Override
+            public void onChanged(@Nullable final ArrayList<String> newValue) {
+                // Creating adapter for spinner
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(NewFellowshipActivity.this, android.R.layout.simple_spinner_item, newValue);
 
-        // Creating adapter for spinner
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
+                // Drop down layout style - list view with radio button
+                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        // Drop down layout style - list view with radio button
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                // attaching data adapter to spinner
+                paymentMethodSpinner.setAdapter(dataAdapter);
+            }
+        };
 
-        // attaching data adapter to spinner
-        categorySpinner.setAdapter(dataAdapter);
-    }
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getPaymentMethodsList().observe(this, paymentMethodsObserver);
 
-    private void setPaymentMethodSpinner() {
-        // Spinner click listener
-        paymentMethodSpinner.setOnItemSelectedListener(this);
+        // We bind the location edit text
+        final Observer<String> locationObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                locationEditText.setText(newValue);
+            }
+        };
 
-        // Spinner Drop down elements
-        ArrayList<String> paymentMethods = new ArrayList<String>();
-        paymentMethods.add("MobilePay");
-        paymentMethods.add("Cash");
-
-        // Creating adapter for spinner
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paymentMethods);
-
-        // Drop down layout style - list view with radio button
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // attaching data adapter to spinner
-        paymentMethodSpinner.setAdapter(dataAdapter);
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getPickupLocation().observe(this, locationObserver);
     }
 
     @Override
