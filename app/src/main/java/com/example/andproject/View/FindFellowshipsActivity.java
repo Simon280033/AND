@@ -47,6 +47,14 @@ public class FindFellowshipsActivity extends AppCompatActivity {
         setUi();
     }
 
+    // We refresh the list of joinables upon resumption
+    @Override
+    public void onResume(){
+        super.onResume();
+        // We refresh them
+        viewModel.refreshFellowships();
+    }
+
     private void setUi() {
         // We bind the UI elements
         bindUiElements();

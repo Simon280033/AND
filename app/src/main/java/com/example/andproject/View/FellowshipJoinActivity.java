@@ -1,6 +1,8 @@
 package com.example.andproject.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.net.Uri;
@@ -36,8 +38,6 @@ public class FellowshipJoinActivity extends AppCompatActivity {
     private ImageView ownerAvatarView;
     private Button cancelJoinButton, requestToJoinButton;
 
-    private String fellowshipId;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +46,108 @@ public class FellowshipJoinActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_fellowship_join);
 
+        findViews();
+
+        setButtonActions();
+
+        // We set the UI
+        setUi();
+    }
+
+    private void setUi() {
+        // We bind the UI elements
+        bindUiElements();
+        // We refresh them
+        viewModel.refreshDetails();
+    }
+
+    // This method binds the View's UI elements to the properties in the viewmodel
+    private void bindUiElements() {
+        // We bind the name text view
+        final Observer<String> displayNameObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                // Update the UI, in this case, a TextView.
+                ownerNameTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getOwnerName().observe(this, displayNameObserver);
+
+        // We bind the avatar
+        final Observer<String> avatarObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                Glide.with(FellowshipJoinActivity.this).load(Uri.parse(newValue)).into(ownerAvatarView);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getAvatarUrl().observe(this, avatarObserver);
+
+        // We bind the webshop text view
+        final Observer<String> webshopObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                // Update the UI, in this case, a TextView.
+                webShopTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getWebshop().observe(this, webshopObserver);
+
+        // We bind the amount needed text view
+        final Observer<String> amountObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                // Update the UI, in this case, a TextView.
+                minimumAmountNeededTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getAmountNeeded().observe(this, amountObserver);
+
+        // We bind the payment method text view
+        final Observer<String> paymentObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                // Update the UI, in this case, a TextView.
+                paymentMethodTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getPaymentMethod().observe(this, paymentObserver);
+
+        // We bind the deadline text view
+        final Observer<String> deadlineObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                // Update the UI, in this case, a TextView.
+                deadlineTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getDeadline().observe(this, deadlineObserver);
+
+        // We bind the distance text view
+        final Observer<String> distanceObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                // Update the UI, in this case, a TextView.
+                distanceTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getDistancee().observe(this, distanceObserver);
+    }
+
+    private void findViews() {
         ownerNameTextView = findViewById(R.id.ownerNameTextView);
         webShopTextView = findViewById(R.id.webShopTextView);
         minimumAmountNeededTextView = findViewById(R.id.minimumAmountNeededTextView);
@@ -57,11 +159,11 @@ public class FellowshipJoinActivity extends AppCompatActivity {
 
         requestToJoinButton = findViewById(R.id.requestToJoinButton);
         cancelJoinButton = findViewById(R.id.cancelJoinButton);
+    }
 
-        fellowshipId = viewModel.getViewFellowshipInfo().id;
-
+    private void setButtonActions() {
         requestToJoinButton.setOnClickListener((View v) -> {
-            requestJoin();
+            viewModel.requestJoin();
             Toast.makeText(FellowshipJoinActivity.this, "Requested to join Fellowship! Pending owner approval.",
                     Toast.LENGTH_LONG).show();
             onBackPressed();
@@ -70,63 +172,5 @@ public class FellowshipJoinActivity extends AppCompatActivity {
         cancelJoinButton.setOnClickListener((View v) -> {
             onBackPressed();
         });
-        setOwnerDetails();
-
-        setDetails();
-    }
-
-    private void setDetails() {
-        // We get the fellowship details
-        Fellowship fs = viewModel.getFellowshipById(fellowshipId);
-
-        webShopTextView.setText(fs.webshop);
-        minimumAmountNeededTextView.setText(fs.amountNeeded + " DKK");
-        paymentMethodTextView.setText(fs.paymentMethod);
-        deadlineTextView.setText(fs.deadline);
-        // FIND A WAY TO CALCULATE DISTANCE BETWEEN TWO LATLONG POINTS!!!
-        distanceTextView.setText("X Meters");
-    }
-
-    private void setOwnerDetails() {
-        // We get the owner of the fellowship
-        String ownerId = viewModel.getViewFellowshipInfo().creatorId;
-        // We get their displayName and avatar URL
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-
-        Query query = myRef.child("users").orderByChild("id").equalTo(ownerId);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        String displayName = ((HashMap<String, String>) issue.getValue()).get("displayName");
-                        String imageUrl = ((HashMap<String, String>) issue.getValue()).get("imageUrl");
-
-                        ownerNameTextView.setText(displayName);
-                        Glide.with(FellowshipJoinActivity.this).load(Uri.parse(imageUrl)).into(ownerAvatarView);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void requestJoin() {
-        // We create the Fellowship request object
-        String requestId = UUID.randomUUID().toString(); // We create a random ID;
-        String fellowshipId = viewModel.getViewFellowshipInfo().id;
-        String requesterId = viewModel.getCurrentUser().getValue().getUid();
-        String requestDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-        int isAccepted = 0;
-
-        FellowshipRequest fsr =  new FellowshipRequest(requestId, fellowshipId, requesterId, requestDate, isAccepted);
-        // We save it to the database
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowshipRequests").child(requestId);
-
-        myRef.setValue(fsr);
     }
 }
