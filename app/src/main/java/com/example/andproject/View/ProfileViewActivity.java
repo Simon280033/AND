@@ -52,6 +52,28 @@ public class ProfileViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile_view);
 
         // We get the UI components
+        findViews();
+
+        // We set button's on-click methods
+        setButtonMethods();
+
+        setButtonAccordingToProfile();
+
+        // We set the UI
+        setUi();
+    }
+
+    private void setButtonMethods() {
+        cancelButton.setOnClickListener((View v) -> {
+            onBackPressed();
+        });
+
+        profileActionButton.setOnClickListener((View v) -> {
+            goToProfileEdit();
+        });
+    }
+
+    private void findViews() {
         profileActionButton = findViewById(R.id.profileActionButton);
         cancelButton = findViewById(R.id.cancelButton);
 
@@ -59,14 +81,6 @@ public class ProfileViewActivity extends AppCompatActivity {
         shipsCounterTextView = findViewById(R.id.shipsCounterTextView);
         imageView = findViewById(R.id.imageView);
         ratingsScrollView = findViewById(R.id.ratingsScrollView);
-
-        cancelButton.setOnClickListener((View v) -> {
-            onBackPressed();
-        });
-
-        setButtonAccordingToProfile();
-
-        setUi();
     }
 
     private void setUi() {
@@ -74,6 +88,8 @@ public class ProfileViewActivity extends AppCompatActivity {
         bindUiElements();
         // We refresh them
         viewModel.refreshUserDetails();
+        // We make the edit button visible if it is our own profile
+        setButtonAccordingToProfile();
     }
 
     // This method binds the View's UI elements to the properties in the viewmodel
@@ -117,20 +133,9 @@ public class ProfileViewActivity extends AppCompatActivity {
 
     private void setButtonAccordingToProfile() {
         // We figure out whether or not this is our own profile
-        if (viewModel.isOwnProfile()) {
-            // If it is
-            profileActionButton.setText("Edit profile");
-            profileActionButton.setOnClickListener((View v) -> {
-                goToProfileEdit();
-            });
-        } else {
+        if (!viewModel.isOwnProfile()) {
             profileActionButton.setVisibility(View.INVISIBLE);
         }
-    }
-
-    private void onActionButtonClicked() {
-        // We figure out whether or not this is our own profile
-        goToMainActivity();
     }
 
     private void goToMainActivity() {

@@ -46,10 +46,8 @@ public class SignInActivity extends AppCompatActivity {
             // We check if a user was returned
             if (user != null) {
                 if (isNewUser()) {
-                    System.out.println("new user");
                     goToProfileEditor();
                 } else {
-                    System.out.println("old user");
                     goToMainActivity();
                 }
             }

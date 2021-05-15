@@ -4,14 +4,19 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -40,18 +45,16 @@ public class ProfileEditorActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 42;
     private ProfileEditorViewModel viewModel;
 
-    private Button saveButton;
-    private Button changeImageButton;
+    private Button saveButton, changeImageButton;
     private EditText nameEditText;
     private TextView emailTextView;
     private ImageView avatarView;
-    private ImageView newAvatarView;
 
     private static final int PICK_IMAGE = 100;
-    private static final int SET_DEFAULT_IMAGE = 101;
 
     private Uri imageUri;
-    private Uri downloadUri;
+
+    private int imageUpdateCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,20 +62,96 @@ public class ProfileEditorActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(ProfileEditorViewModel.class);
         setContentView(R.layout.profile_editor_activity);
 
+        // We set the image update counter for the session to 0
+        imageUpdateCount = 0;
+
         // We get the UI components
-        saveButton = findViewById(R.id.signOutButton);
-        changeImageButton = findViewById(R.id.changeImageButton);
+        findViews();
 
-        nameEditText = findViewById(R.id.nameEditText);
-        emailTextView = findViewById(R.id.emailTextView);
-        avatarView = findViewById(R.id.avatarView);
-        newAvatarView = findViewById(R.id.newAvatarView);
-        newAvatarView.setVisibility(View.INVISIBLE); // New avatar view is invisible by default
-
-        // We set the user details
-        checkIfUserExists();
+        setUi();
 
         // We set button methods
+        setButtonMethods();
+
+        toggleSaveButtonAvailability();
+    }
+
+    private void toggleSaveButtonAvailability() {
+        saveButton.setEnabled(false);
+        nameEditText.addTextChangedListener (new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int i, int i1, int i2){
+                if (viewModel.getDisplayName().getValue().equals(nameEditText.getText().toString())) {
+                    saveButton.setEnabled(false);
+                } else {
+                    saveButton.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+
+    private void setUi() {
+        // We bind the UI elements
+        bindUiElements();
+        // We refresh them
+        viewModel.refreshUserDetails();
+    }
+
+    // This method binds the View's UI elements to the properties in the viewmodel
+    private void bindUiElements() {
+        // We bind the name text edit
+        final Observer<String> displayNameObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                // Update the UI, in this case, a TextView.
+                nameEditText.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getDisplayName().observe(this, displayNameObserver);
+
+        // We bind the email text view
+        final Observer<String> emailObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                // Update the UI, in this case, a TextView.
+                emailTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getEmail().observe(this, emailObserver);
+
+        // We bind the avatar
+        final Observer<String> avatarObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                Glide.with(ProfileEditorActivity.this).load(Uri.parse(newValue)).into(avatarView);
+                imageUpdateCount++;
+                if (imageUpdateCount > 1) {
+                    Toast.makeText(ProfileEditorActivity.this, "Successfully updated avatar!",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getAvatarUrl().observe(this, avatarObserver);
+    }
+
+    private void setButtonMethods() {
         saveButton.setOnClickListener((View v) -> {
             saveButtonPressed();
             goToMainActivity();
@@ -81,135 +160,41 @@ public class ProfileEditorActivity extends AppCompatActivity {
         changeImageButton.setOnClickListener((View v) -> {
             openGallery();
         });
-
-        avatarExists();
     }
 
-    private void checkIfUserExists() {
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("users").child(viewModel.getCurrentUserData().getValue().getUid());
+    private void findViews() {
+        saveButton = findViewById(R.id.signOutButton);
+        changeImageButton = findViewById(R.id.changeImageButton);
 
-        ValueEventListener eventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists()) {
-                    //create new user
-                    UploadImageToFireBaseStorage(viewModel.getCurrentUserData().getValue().getPhotoUrl());
-                    SaveUserInfo();
-
-                    checkIfUserExists();
-                } else {
-                    Map<String,String> td=(HashMap<String, String>)dataSnapshot.getValue();
-
-                    User user = new User(td.get("id"), td.get("displayName"), td.get("imageUrl"), td.get("email"));
-                    setUserDetails(user);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        myRef.addListenerForSingleValueEvent(eventListener);
+        nameEditText = findViewById(R.id.nameEditText);
+        emailTextView = findViewById(R.id.emailTextView);
+        avatarView = findViewById(R.id.avatarView);
     }
 
-    private void avatarExists() {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-
-        boolean exists = false;
-        storageRef.child("images/avatars/" + viewModel.getCurrentUserData().getValue().getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                // If the avatar exists, we load it into glide
-                System.out.println("test; exists");
-                Glide.with(ProfileEditorActivity.this).load(uri).into(avatarView);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // If it doesn't, we create one and load it into glide
-                System.out.println("test; exists not");
-                Uri theImage = viewModel.getCurrentUserData().getValue().getPhotoUrl();
-                if (theImage == null) {
-                    theImage = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.logo);
-                }
-                UploadImageToFireBaseStorage(theImage);
-                Glide.with(ProfileEditorActivity.this).load(theImage).into(avatarView);
-            }
-        });
-    }
-
+    // When user wants to upload new avatar, he can choose from gallery
     private void openGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(gallery, PICK_IMAGE);
     }
 
+    // This method is called when a user picks a new avatar from the gallery
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
-            saveButton.setEnabled(false);
-            avatarView.setVisibility(View.INVISIBLE);
-            newAvatarView.setVisibility(View.VISIBLE);
+            imageUri = data.getData();
 
-                imageUri = data.getData();
-
-            newAvatarView.setImageURI(imageUri);
-
-            UploadImageToFireBaseStorage(imageUri);
+            viewModel.uploadImageToFireBaseStorage(imageUri);
         }
-    }
-
-    private void UploadImageToFireBaseStorage(Uri imageUri) {
-        // Create a storage reference from our app
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-
-        StorageReference avatarsRef = storageRef.child("images/avatars/" + viewModel.getCurrentUserData().getValue().getUid());
-        UploadTask uploadTask = avatarsRef.putFile(imageUri);
-
-        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-
-                // Continue with the task to get the download URL
-                return avatarsRef.getDownloadUrl();
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                System.out.println("test; complete");
-                if (task.isSuccessful()) {
-                    downloadUri = task.getResult();
-                    saveButton.setEnabled(true);
-                } else {
-                    // Handle failures
-                    // ...
-                }
-            }
-        });
-    }
-
-    private void setUserDetails(User user)  {
-        nameEditText.setText(user.displayName);
-        emailTextView.setText(user.email);
     }
 
     private void saveButtonPressed() {
         // If the standard avatar view is visible, the user has not changed pictures
         // We check if the changed usernames
         if (!(nameEditText.getText().equals(viewModel.getCurrentUserData().getValue().getDisplayName()))) {
-            SaveUserInfo();
-        }
-    }
-
-    private void updateUser() {
-        if (downloadUri != null) {
-            viewModel.updateUser("username", downloadUri);
+            viewModel.saveUserInfo(nameEditText.getText().toString());
+            Toast.makeText(ProfileEditorActivity.this, "Successfully updated display name!",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -218,27 +203,4 @@ public class ProfileEditorActivity extends AppCompatActivity {
         finish();
     }
 
-    private void SaveUserInfo() {
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("users").child(viewModel.getCurrentUserData().getValue().getUid());
-
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-
-        storageRef.child("images/avatars/" + viewModel.getCurrentUserData().getValue().getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                User user = new User(viewModel.getCurrentUserData().getValue().getUid(), nameEditText.getText().toString(), uri.toString(), viewModel.getCurrentUserData().getValue().getEmail());
-                myRef.setValue(user);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-
-            }
-        });
-
-        // We also create a table for the Fellowships-completed counter
-        DatabaseReference counterRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("completedCounter").child(viewModel.getCurrentUserData().getValue().getUid());
-        counterRef.setValue(new CompletedCounter(viewModel.getCurrentUserData().getValue().getUid(), 0));
-    }
 }

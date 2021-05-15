@@ -1,6 +1,7 @@
 package com.example.andproject.Model;
 
 import android.app.Application;
+import android.net.Uri;
 import android.util.Pair;
 import android.widget.ArrayAdapter;
 
@@ -148,5 +149,9 @@ public class Model {
 
     public void signOut() {
         userRepository.signOut();
+    }
+
+    public void updateCurrentUser(String displayName, Uri avatarUri) {
+        userRepository.updateCurrentUser(displayName, avatarUri);
     }
 }

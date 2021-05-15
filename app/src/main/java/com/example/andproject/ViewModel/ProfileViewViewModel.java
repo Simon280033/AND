@@ -59,8 +59,6 @@ public class ProfileViewViewModel extends AndroidViewModel {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    ArrayList<String> listItems=new ArrayList<String>();
-                    // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
                         String dn = ((HashMap<String, String>) issue.getValue()).get("displayName");
                         String iu = ((HashMap<String, String>) issue.getValue()).get("imageUrl");
@@ -93,8 +91,6 @@ public class ProfileViewViewModel extends AndroidViewModel {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    ArrayList<String> listItems=new ArrayList<String>();
-                    // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
                         Long currentAmount = ((HashMap<String, Long>) issue.getValue()).get("count");
                         int newAmount = (int) Integer.parseInt("" + currentAmount);
