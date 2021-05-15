@@ -41,6 +41,7 @@ public class FellowshipJoinActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         viewModel = new ViewModelProvider(this).get(FellowshipJoinViewModel.class);
 
         setContentView(R.layout.activity_fellowship_join);
@@ -69,7 +70,6 @@ public class FellowshipJoinActivity extends AppCompatActivity {
         cancelJoinButton.setOnClickListener((View v) -> {
             onBackPressed();
         });
-
         setOwnerDetails();
 
         setDetails();
@@ -83,7 +83,6 @@ public class FellowshipJoinActivity extends AppCompatActivity {
         minimumAmountNeededTextView.setText(fs.amountNeeded + " DKK");
         paymentMethodTextView.setText(fs.paymentMethod);
         deadlineTextView.setText(fs.deadline);
-
         // FIND A WAY TO CALCULATE DISTANCE BETWEEN TWO LATLONG POINTS!!!
         distanceTextView.setText("X Meters");
     }

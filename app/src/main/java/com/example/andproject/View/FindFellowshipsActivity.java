@@ -1,6 +1,8 @@
 package com.example.andproject.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -31,132 +33,57 @@ public class FindFellowshipsActivity extends AppCompatActivity {
 
     private ListView fellowshipsList;
 
-    private ArrayList<String> pendingsRequestsFellowships;
-    private ArrayList<Fellowship> fellowshipsDetails;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(FindFellowshipsViewModel.class);
 
-        pendingsRequestsFellowships = new ArrayList<>();
-        fellowshipsDetails = new ArrayList<>();
-
         setContentView(R.layout.activity_find_fellowships);
 
         fellowshipsList = findViewById(R.id.fellowshipsList);
 
+        setSpinnerSelectionActions();
+
+        setUi();
+    }
+
+    private void setUi() {
+        // We bind the UI elements
+        bindUiElements();
+        // We refresh them
+        viewModel.refreshFellowships();
+    }
+
+    // This method binds the View's UI elements to the properties in the viewmodel
+    private void bindUiElements() {
+        // We bind the spinner for our own Fellowships
+        final Observer<ArrayList<String>> fellowshipsObserver = new Observer<ArrayList<String>>() {
+            @Override
+            public void onChanged(@Nullable final ArrayList<String> newValue) {
+
+                //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
+                ArrayAdapter<String> adapter =new ArrayAdapter<String>(FindFellowshipsActivity.this,
+                        android.R.layout.simple_list_item_1,
+                        newValue);
+
+                fellowshipsList.setAdapter(adapter);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getFellowshipsList().observe(this, fellowshipsObserver);
+    }
+
+    private void setSpinnerSelectionActions() {
         // We get the ID of the fellowship selected
         fellowshipsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // We set the ID of the fellowship we want to view in the model
-                viewModel.setViewFellowshipInfo(fellowshipsDetails.get(position));
+                System.out.println("læs: " + viewModel.getFellowshipAt(position).amountNeeded);
+                viewModel.setViewFellowshipInfo(viewModel.getFellowshipAt(position));
                 goToFellowship();
-            }
-        });
-    }
-
-    // Whenever we return to this, we reload the listview
-    @Override
-    public void onResume(){
-        super.onResume();
-        getPendingRequestedFellowships();
-    }
-
-    private void getPendingRequestedFellowships() {
-        pendingsRequestsFellowships.clear();
-
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-
-        Query query = myRef.child("fellowshipRequests").orderByChild("requesterId").equalTo(viewModel.getCurrentUser().getValue().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        if (((HashMap<String, String>) issue.getValue()).get("requesterId").equals(viewModel.getCurrentUser().getValue().getUid())) {
-                            String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("fellowshipId");
-                            pendingsRequestsFellowships.add(fellowshipId);
-                        }
-                    }
-                }
-                System.out.println("læs: fellowships we already applied for: " + pendingsRequestsFellowships.size());
-                // After we have gotten the list of Fellowships we have already applied for, we get those we haven't
-                getFellowships();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void getFellowships() {
-        System.out.println("læs: getting joinable fellowships");
-        // We clear the spinner
-        fellowshipsList.setAdapter(null);
-
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-
-        Query query = myRef.child("fellowships");
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-                    ArrayList<String> listItems=new ArrayList<String>();
-                    // We make a hashmap of joinable fellowships for other activities
-                    HashMap<String, Fellowship> joinableFellowships = new HashMap<>();
-                    // dataSnapshot is the "issue" node with all children with id 0
-                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        System.out.println("læs: fellowships exists");
-                        // We check if it is our own fellowship, if it is, we don't add it to the list (Unless we have already applied for it)
-                        if (!((HashMap<String, String>) issue.getValue()).get("creatorId").equals(viewModel.getCurrentUser().getValue().getUid())) {
-                            String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("id");
-                            System.out.println("læs: fellowship id: " + fellowshipId);
-                            if (!pendingsRequestsFellowships.contains(fellowshipId)) {
-                                String id = ((HashMap<String, String>) issue.getValue()).get("id");
-                                String ownerId = ((HashMap<String, String>) issue.getValue()).get("creatorId");
-                                String webShop = ((HashMap<String, String>) issue.getValue()).get("webshop");
-                                String category = ((HashMap<String, String>) issue.getValue()).get("category");
-                                Long amountNeeded = ((HashMap<String, Long>) issue.getValue()).get("amountNeeded");
-                                String paymentMethod = ((HashMap<String, String>) issue.getValue()).get("paymentMethod");
-                                String deadline = ((HashMap<String, String>) issue.getValue()).get("deadline");
-                                String pickupCoordinates = ((HashMap<String, String>) issue.getValue()).get("pickupCoordinates");
-                                String partnerId = ((HashMap<String, String>) issue.getValue()).get("partnerId");
-                                Long partnerPaid = ((HashMap<String, Long>) issue.getValue()).get("partnerPaid");
-                                Long paymentApproved = ((HashMap<String, Long>) issue.getValue()).get("paymentApproved");
-                                String receiptUrl = ((HashMap<String, String>) issue.getValue()).get("receiptUrl");
-                                Long ownerCompleted = ((HashMap<String, Long>) issue.getValue()).get("ownerCompleted");
-                                Long partnerCompleted = ((HashMap<String, Long>) issue.getValue()).get("partnerCompleted");
-                                Long isCompleted = ((HashMap<String, Long>) issue.getValue()).get("isCompleted");
-
-                                listItems.add("Web shop:" + webShop + ", amount needed: " + amountNeeded + " DKK");
-
-                                Fellowship fs = new Fellowship(id, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + ownerCompleted), (int) Integer.parseInt("" + partnerCompleted), (int) Integer.parseInt("" + isCompleted));
-                                joinableFellowships.put(fellowshipId, fs);
-
-                                fellowshipsDetails.add(fs);
-                            }
-                        }
-                    }
-                    // We set the fellowship hashmap in the model
-                    viewModel.setJoinableFellowships(joinableFellowships);
-                    //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
-                    ArrayAdapter<String> adapter =new ArrayAdapter<String>(FindFellowshipsActivity.this,
-                            android.R.layout.simple_list_item_1,
-                            listItems);
-
-                    fellowshipsList.setAdapter(adapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
