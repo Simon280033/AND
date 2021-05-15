@@ -22,7 +22,7 @@ public class ProfileEditorViewModel extends AndroidViewModel {
     }
 
     public void updateUser(String displayName, Uri avatarUri) {
-        userRepository.updateUser(displayName, avatarUri);
+        userRepository.updateCurrentUser(displayName, avatarUri);
     }
 
     }

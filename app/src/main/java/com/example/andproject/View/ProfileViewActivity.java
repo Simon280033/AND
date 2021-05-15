@@ -1,7 +1,9 @@
 package com.example.andproject.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -17,11 +19,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
-import com.example.andproject.ViewModel.ProfileEditorViewModel;
-import com.example.andproject.ViewModel.ProfileViewModel;
+import com.example.andproject.ViewModel.ProfileViewViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,17 +28,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class ProfileViewActivity extends AppCompatActivity {
 
-    private ProfileViewModel viewModel;
+    private ProfileViewViewModel viewModel;
 
     private Button profileActionButton;
     private Button cancelButton;
@@ -52,7 +48,7 @@ public class ProfileViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ProfileViewViewModel.class);
         setContentView(R.layout.activity_profile_view);
 
         // We get the UI components
@@ -70,60 +66,53 @@ public class ProfileViewActivity extends AppCompatActivity {
 
         setButtonAccordingToProfile();
 
-        // We set the avatar
-        setAvatar();
-        setShipsCounterTextView();
+        setUi();
     }
 
-    private void setShipsCounterTextView()  {
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-
-        Query ownerQuery = myRef.child("completedCounter").orderByChild("userId").equalTo(viewModel.getViewProfileOf().id);
-        ownerQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-                    ArrayList<String> listItems=new ArrayList<String>();
-                    // dataSnapshot is the "issue" node with all children with id 0
-                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        Long currentAmount = ((HashMap<String, Long>) issue.getValue()).get("count");
-                        int newAmount = (int) Integer.parseInt("" + currentAmount);
-
-                        shipsCounterTextView.setText("" + newAmount);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+    private void setUi() {
+        // We bind the UI elements
+        bindUiElements();
+        // We refresh them
+        viewModel.refreshUserDetails();
     }
 
-    private void setAvatar() {
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-
-        myRef.child("users").child(viewModel.getViewProfileOf().id).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+    // This method binds the View's UI elements to the properties in the viewmodel
+    private void bindUiElements() {
+        // We bind the name text view
+        final Observer<String> displayNameObserver = new Observer<String>() {
             @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                }
-                else {
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                    DataSnapshot ds = task.getResult();
-
-                    Map<String,String> td=(HashMap<String, String>)ds.getValue();
-
-                    User user = new User(td.get("id"), td.get("displayName"), td.get("imageUrl"), td.get("email"));
-
-                    nameTextView.setText(user.displayName);
-                    Glide.with(ProfileViewActivity.this).load(Uri.parse(user.imageUrl)).into(imageView);
-                }
+            public void onChanged(@Nullable final String newName) {
+                // Update the UI, in this case, a TextView.
+                nameTextView.setText(newName);
             }
-        });
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getDisplayName().observe(this, displayNameObserver);
+
+        // We bind the avatar
+        final Observer<String> avatarUrlObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newUrl) {
+                // We use glide to set the image
+                Glide.with(ProfileViewActivity.this).load(Uri.parse(newUrl)).into(imageView);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getAvatarUrl().observe(this, avatarUrlObserver);
+
+        // We bind the shipscounter.
+        final Observer<String> shipsCounterObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newCount) {
+                // Update the UI, in this case, a TextView.
+                shipsCounterTextView.setText(newCount);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getShipsCounter().observe(this, shipsCounterObserver);
     }
 
     private void setButtonAccordingToProfile() {

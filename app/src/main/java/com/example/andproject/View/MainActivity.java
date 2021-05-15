@@ -15,9 +15,7 @@ import com.example.andproject.ViewModel.MainActivityViewModel;
 public class MainActivity extends AppCompatActivity {
     private MainActivityViewModel viewModel;
 
-    private Button viewProfileButton;
-    private Button fellowshipsButton;
-    private Button signOutButton;
+    private Button viewProfileButton, fellowshipsButton, signOutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkIfSignedIn() {
         viewModel.getCurrentUser().observe(this, user -> {
-            if (user != null) {
-
-            } else
+            if (user == null) {
                 startLoginActivity();
+            }
         });
     }
 
