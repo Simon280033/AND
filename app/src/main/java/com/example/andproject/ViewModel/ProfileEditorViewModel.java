@@ -120,6 +120,7 @@ public class ProfileEditorViewModel extends AndroidViewModel {
 
                     User user = new User(td.get("id"), td.get("displayName"), td.get("imageUrl"), td.get("email"));
                     setUserDetails(user);
+                    model.setThisUser(user);
                 }
             }
 

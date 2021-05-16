@@ -45,5 +45,7 @@
         android:layout_alignParentTop="true"
         android:divider="@android:color/transparent"
         android:layout_marginBottom="16dp"
-        android:dividerHeight="16dp" />
+        android:dividerHeight="16dp"
+        android:transcriptMode="alwaysScroll"
+        android:stackFromBottom="true"/>
 </RelativeLayout>

@@ -48,6 +48,7 @@ public class SignInActivity extends AppCompatActivity {
                 if (isNewUser()) {
                     goToProfileEditor();
                 } else {
+                    viewModel.setCustomerUserData();
                     goToMainActivity();
                 }
             }

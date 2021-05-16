@@ -28,6 +28,9 @@ public class Model {
     private final UserRepository userRepository;
 
     // Session data
+    // Customer user data (different from default authenticator data)
+    private User thisUser;
+
     // Profile view
     private User viewProfileOf;
 
@@ -54,6 +57,14 @@ public class Model {
         if(instance == null)
             instance = new Model(app);
         return instance;
+    }
+
+    public void setThisUser(User user) {
+        this.thisUser = user;
+    }
+
+    public User getThisUser() {
+        return this.thisUser;
     }
 
     public void setChatReceiver(User user) {

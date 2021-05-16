@@ -27,6 +27,10 @@ public class ChatViewModel extends AndroidViewModel {
         model = Model.getInstance(app);
     }
 
+    public User getThisUser() {
+        return model.getThisUser();
+    }
+
     public User getChatReceiver() {
         return model.getChatReceiver();
     }
