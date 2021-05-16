@@ -1,5 +1,7 @@
 package com.example.andproject.Entities;
 
+import android.text.format.DateFormat;
+
 import java.util.Date;
 
 public class Message {
@@ -21,5 +23,9 @@ public class Message {
         this.messageText = messageText;
 
         this.messageTime = new Date().getTime();
+    }
+
+    public String getTime() {
+        return DateFormat.format("dd-MM-yyyy (HH:mm:ss)", this.messageTime).toString();
     }
 }

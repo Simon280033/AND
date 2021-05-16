@@ -3,16 +3,21 @@ package com.example.andproject.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.text.method.TextKeyListener;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.andproject.Entities.Message;
+import com.example.andproject.Entities.MessageAdapter;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.ChatViewModel;
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -26,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ChatActivity extends AppCompatActivity {
@@ -36,6 +42,9 @@ public class ChatActivity extends AppCompatActivity {
     private ListView messageList;
 
     private FirebaseListAdapter<Message> adapter;
+
+    private MutableLiveData<ArrayList<Message>> yourFellowshipsList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +57,29 @@ public class ChatActivity extends AppCompatActivity {
 
         setButtonActions();
 
-        subscribe();
        // setUi();
 
        // displayChatMessages();
+
+        yourFellowshipsList = new MutableLiveData<ArrayList<Message>>();
+        // We bind the spinner for our own Fellowships
+        final Observer<ArrayList<Message>> ownFellowshipsObserver = new Observer<ArrayList<Message>>() {
+            @Override
+            public void onChanged(@Nullable final ArrayList<Message> newValue) {
+System.out.println("læs: onchanged");
+                //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
+                MessageAdapter madb = new MessageAdapter(ChatActivity.this, 0, newValue);
+
+
+                messageList.setAdapter(madb);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        yourFellowshipsList.observe(this, ownFellowshipsObserver);
+
+        subscribe();
+
     }
 
     private void setUi() {
@@ -78,6 +106,7 @@ public class ChatActivity extends AppCompatActivity {
         ownerQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+                ArrayList<Message> ms = new ArrayList<>();
                 System.out.println("læs: child added");
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
@@ -93,49 +122,61 @@ public class ChatActivity extends AppCompatActivity {
 
                         Message message = new Message(fellowshipId, senderId, senderName, receiverId, receiverName, messageText);
 
-                        System.out.println("læs: " + message);
+                        System.out.println("læs: " + message.messageText);
+
+                        ms.add(message);
                     }
+                    yourFellowshipsList.setValue(ms);
                 }
             }
 
             @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+                ArrayList<Message> ms = new ArrayList<>();
 
+                System.out.println("læs: child changed");
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
+                        String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("fellowshipId");;
+                        String senderId = ((HashMap<String, String>) issue.getValue()).get("senderId");;
+                        String senderName = ((HashMap<String, String>) issue.getValue()).get("senderName");;
+                        String receiverId = ((HashMap<String, String>) issue.getValue()).get("receiverId");;
+                        String receiverName = ((HashMap<String, String>) issue.getValue()).get("receiverName");;
+                        String messageText = ((HashMap<String, String>) issue.getValue()).get("messageText");;
+                        Long messageTime = ((HashMap<String, Long>) issue.getValue()).get("messageTime");;
+
+                        //String messageDateTime = DateFormat.format("dd-MM-yyyy (HH:mm:ss)", messageTime).toString();
+
+                        Message message = new Message(fellowshipId, senderId, senderName, receiverId, receiverName, messageText);
+
+                        System.out.println("læs: " + message.messageText);
+
+                        ms.add(message);
+
+                    }
+                    yourFellowshipsList.setValue(ms);
+
+                }
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                System.out.println("læs: child Removed");
 
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                System.out.println("læs: child Moved");
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                System.out.println("læs: child onCancelled");
 
             }
         });
-        /*
-        ownerQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        String message = ((HashMap<String, String>) issue.getValue()).get("messageText");
-                        System.out.println("læs: " + message);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        */
     }
 
     private void displayChatMessages() {
@@ -192,6 +233,8 @@ public class ChatActivity extends AppCompatActivity {
                 .setValue(message);
 
         // Clear the input
-        messageInput.setText("");
+        if (messageInput.length() > 0) {
+            TextKeyListener.clear(messageInput.getText());
+        }
     }
 }
