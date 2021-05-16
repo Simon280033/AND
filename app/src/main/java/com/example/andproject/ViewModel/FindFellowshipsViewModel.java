@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.andproject.Entities.Fellowship;
-import com.example.andproject.Entities.Message;
 import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
 import com.google.firebase.auth.FirebaseUser;
@@ -165,14 +164,6 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
 
     public LiveData<FirebaseUser> getCurrentUser(){
         return model.getCurrentUserData();
-    }
-
-    public void saveMessage(String message) {
-        model.saveMessage(message);
-    }
-
-    public LiveData<Message> getMessage() {
-        return model.getMessage();
     }
 
     public void signOut() {

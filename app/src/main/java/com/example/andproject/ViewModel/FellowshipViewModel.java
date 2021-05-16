@@ -22,6 +22,10 @@ public class FellowshipViewModel extends AndroidViewModel {
         model.incrementCompletionCounterForBothUsers(ownerId, partnerId);
     }
 
+    public void setChatReceiver(User user) {
+        model.setChatReceiver(user);
+    }
+
     public Fellowship getViewFellowshipInfo() {
         return model.getViewFellowshipInfo();
     }

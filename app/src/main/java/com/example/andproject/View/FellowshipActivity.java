@@ -46,11 +46,13 @@ public class FellowshipActivity extends AppCompatActivity {
 
     private boolean ownerOfFellowship;
 
+    private User fellowshipPartner;
+
     private ImageView partnerAvatarView;
 
     private TextView partnerNameTextView, webShopTextView, minimumAmountNeededTextView, paymentMethodTextView, paymentStatusHeader, paymentStatusTextView, receiptNameTextView, completionStatusTextView;
 
-    private Button paymentStatusButton, receiptButton, markAsDoneButton;
+    private Button paymentStatusButton, receiptButton, markAsDoneButton, openChatButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,11 @@ public class FellowshipActivity extends AppCompatActivity {
         receiptButton = findViewById(R.id.receiptButton);
         markAsDoneButton = findViewById(R.id.markAsDoneButton);
         completionStatusTextView = findViewById(R.id.completionStatusTextView);
+        openChatButton = findViewById(R.id.openChatButton);
+
+        openChatButton.setOnClickListener((View v) -> {
+            goToChat();
+        });
 
         receiptButton.setOnClickListener((View v) -> {
             receiptMethodForUser();
@@ -96,6 +103,12 @@ public class FellowshipActivity extends AppCompatActivity {
         setPaymentProperties();
         setReceiptProperties();
         setMarkAsDoneProperties();
+    }
+
+    private void goToChat() {
+        // We set the chat info
+        viewModel.setChatReceiver(fellowshipPartner);
+        startActivity(new Intent(this, ChatActivity.class));
     }
 
     private void paymentButtonMethod() {
@@ -268,9 +281,13 @@ public class FellowshipActivity extends AppCompatActivity {
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
                         String displayName = ((HashMap<String, String>) issue.getValue()).get("displayName");
                         String imageUrl = ((HashMap<String, String>) issue.getValue()).get("imageUrl");
+                        String email = ((HashMap<String, String>) issue.getValue()).get("email");
+                        String userId = ((HashMap<String, String>) issue.getValue()).get("id");
 
                         partnerNameTextView.setText(displayName);
                         Glide.with(FellowshipActivity.this).load(Uri.parse(imageUrl)).into(partnerAvatarView);
+
+                        fellowshipPartner = new User(userId, displayName, imageUrl, email);
                     }
                 }
             }

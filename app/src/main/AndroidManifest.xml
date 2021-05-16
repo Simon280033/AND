@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight">
-        <activity android:name=".View.FellowshipActivity"></activity>
+        <activity android:name=".View.ChatActivity"></activity>
+        <activity android:name=".View.FellowshipActivity" />
         <activity android:name=".View.FellowshipRequestsActivity" />
         <activity android:name=".View.FindFellowshipsActivity" />
         <activity android:name=".View.FellowshipJoinActivity" />

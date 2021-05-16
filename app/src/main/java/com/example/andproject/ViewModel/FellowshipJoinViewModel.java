@@ -1,20 +1,15 @@
 package com.example.andproject.ViewModel;
 
 import android.app.Application;
-import android.net.Uri;
-import android.util.Pair;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.bumptech.glide.Glide;
 import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.Entities.FellowshipRequest;
-import com.example.andproject.Entities.Message;
 import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
-import com.example.andproject.View.FellowshipJoinActivity;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -172,14 +167,6 @@ public class FellowshipJoinViewModel extends AndroidViewModel {
 
     public LiveData<FirebaseUser> getCurrentUser(){
         return model.getCurrentUserData();
-    }
-
-    public void saveMessage(String message) {
-        model.saveMessage(message);
-    }
-
-    public LiveData<Message> getMessage() {
-        return model.getMessage();
     }
 
     public void signOut() {

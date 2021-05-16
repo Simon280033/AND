@@ -2,17 +2,12 @@ package com.example.andproject.Model;
 
 import android.app.Application;
 import android.net.Uri;
-import android.util.Pair;
-import android.widget.ArrayAdapter;
 
 import androidx.lifecycle.LiveData;
 
 import com.example.andproject.Entities.Fellowship;
-import com.example.andproject.Entities.Message;
 import com.example.andproject.Entities.User;
-import com.example.andproject.Mediator.MessageRepository;
 import com.example.andproject.Mediator.UserRepository;
-import com.example.andproject.View.FellowshipsActivity;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,7 +26,6 @@ public class Model {
 
     // Livedata
     private final UserRepository userRepository;
-    private final MessageRepository messageRepository;
 
     // Session data
     // Profile view
@@ -40,6 +34,9 @@ public class Model {
     // Fellowship view
     private Fellowship fellowship;
 
+    // Chat view
+    private User chatReceiver;
+
     // Joinable fellowships
     private HashMap<String, Fellowship> joinableFellowships;
 
@@ -47,18 +44,24 @@ public class Model {
         this.app = app;
 
         userRepository = UserRepository.getInstance(app);
-        messageRepository = MessageRepository.getInstance();
     }
 
     public void init() {
         String userId = userRepository.getCurrentUserData().getValue().getUid();
-        messageRepository.init(userId);
     }
 
     public static synchronized Model getInstance(Application app) {
         if(instance == null)
             instance = new Model(app);
         return instance;
+    }
+
+    public void setChatReceiver(User user) {
+        this.chatReceiver = user;
+    }
+
+    public User getChatReceiver() {
+        return this.chatReceiver;
     }
 
     public void incrementCompletionCounterForBothUsers(String ownerId, String partnerId) {
@@ -137,14 +140,6 @@ public class Model {
 
     public LiveData<FirebaseUser> getCurrentUserData(){
         return userRepository.getCurrentUserData();
-    }
-
-    public void saveMessage(String message) {
-        messageRepository.saveMessage(message);
-    }
-
-    public LiveData<Message> getMessage() {
-        return messageRepository.getMessage();
     }
 
     public void signOut() {
