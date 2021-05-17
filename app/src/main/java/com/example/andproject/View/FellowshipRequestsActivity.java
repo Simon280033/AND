@@ -1,7 +1,9 @@
 package com.example.andproject.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.DialogInterface;
@@ -29,10 +31,6 @@ import java.util.HashMap;
 public class FellowshipRequestsActivity extends AppCompatActivity {
     private FellowshipRequestViewModel viewModel;
 
-    private ArrayList<String> userIds;
-    private HashMap<String, User> users;
-    private HashMap<String, String> requestIdByUserId;
-
     private ListView requestingUsersList;
 
     @Override
@@ -41,22 +39,40 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(FellowshipRequestViewModel.class);
         setContentView(R.layout.activity_fellowship_requests);
 
-        userIds = new ArrayList<>();
-        users = new HashMap<>();
-        requestIdByUserId = new HashMap<>();
-
         requestingUsersList = findViewById(R.id.requestingUsersList);
 
-        getUsernamesByIds();
+        bindUiElements();
+
+        viewModel.refreshList();
 
         // When we select one of the requests
         requestingUsersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                showOptionsForSelectedRequest(users.get(userIds.get(position)));
+                showOptionsForSelectedRequest(viewModel.getUsers().get(viewModel.getUserId(position)));
             }
         });
+    }
+
+    // This method binds the View's UI elements to the properties in the viewmodel
+    private void bindUiElements() {
+        // We bind the spinner for the fellowship requests
+        final Observer<ArrayList<String>> requestsObserver = new Observer<ArrayList<String>>() {
+            @Override
+            public void onChanged(@Nullable final ArrayList<String> newValue) {
+
+                //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
+                ArrayAdapter<String> adapter =new ArrayAdapter<String>(FellowshipRequestsActivity.this,
+                        android.R.layout.simple_list_item_1,
+                        newValue);
+
+                requestingUsersList.setAdapter(adapter);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getRequestsOverviewList().observe(this, requestsObserver);
     }
 
     private void showOptionsForSelectedRequest(User user) {
@@ -69,7 +85,7 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Accept request", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int id) {
-                acceptRequestFromUser(user);
+                viewModel.acceptRequestFromUser(user);
                 Toast.makeText(FellowshipRequestsActivity.this, "Successfully accepted Fellowship request!",
                         Toast.LENGTH_LONG).show();
                 goToFellowshipsView();
@@ -89,92 +105,6 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
             }});
 
         alertDialog.show();
-    }
-
-    private void getUsernamesByIds() {
-        System.out.println("læs: getting names");
-
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-
-        Query query = myRef.child("users");
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        String userId = ((HashMap<String, String>) issue.getValue()).get("id");
-                        String displayName = ((HashMap<String, String>) issue.getValue()).get("displayName");
-                        String imageUrl = ((HashMap<String, String>) issue.getValue()).get("imageUrl");
-                        String email = ((HashMap<String, String>) issue.getValue()).get("email");
-
-                        users.put(userId, new User(userId, displayName, imageUrl, email));
-                    }
-                    // After we have gotten the list of ids/names, we get the requests for the fellowship
-                    getRequestsForFellowship();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void getRequestsForFellowship() {
-        System.out.println("læs: getting");
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-
-        Query query = myRef.child("fellowshipRequests").orderByChild("fellowshipId").equalTo(viewModel.getViewFellowshipInfo().id);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-                    ArrayList<String> listItems=new ArrayList<String>();
-                    // dataSnapshot is the "issue" node with all children with id 0
-                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        String requestId = ((HashMap<String, String>) issue.getValue()).get("requestId");
-                        String requesterId = ((HashMap<String, String>) issue.getValue()).get("requesterId");
-                        String requesterName = users.get(requesterId).displayName;
-
-                        listItems.add(requesterName);
-                        userIds.add(requesterId);
-                        requestIdByUserId.put(requesterId, requestId);
-                    }
-                    System.out.println("læs: " + listItems.size());
-
-                    //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
-                    ArrayAdapter<String> adapter =new ArrayAdapter<String>(FellowshipRequestsActivity.this,
-                            android.R.layout.simple_list_item_1,
-                            listItems);
-
-                    requestingUsersList.setAdapter(adapter);
-                } else {
-                    System.out.println("læs: not getting lol");
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void acceptRequestFromUser(User user) {
-        // We mark the request as accepted
-        String requestId = requestIdByUserId.get(user.id);
-
-        viewModel.getViewFellowshipInfo().partnerId = user.id;
-
-        // We set it in the database
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-
-        myRef.child("fellowshipRequests").child(requestId).child("isAccepted").setValue(1);
-
-        // We set the partner ID in the Fellowship table
-        myRef.child("fellowships").child(viewModel.getViewFellowshipInfo().id).child("partnerId").setValue(user.id);
     }
 
     private void goToProfileView() {
