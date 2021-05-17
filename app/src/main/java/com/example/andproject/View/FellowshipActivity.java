@@ -276,6 +276,7 @@ public class FellowshipActivity extends AppCompatActivity {
 
     private void setButtonActions() {
         openChatButton.setOnClickListener((View v) -> {
+            viewModel.setChatReceiver();
             goToChat();
         });
 
