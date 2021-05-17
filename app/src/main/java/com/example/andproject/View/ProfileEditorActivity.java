@@ -78,6 +78,7 @@ public class ProfileEditorActivity extends AppCompatActivity {
 
     private void toggleSaveButtonAvailability() {
         saveButton.setEnabled(false);
+        saveButton.setAlpha(.5f);
         nameEditText.addTextChangedListener (new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -88,8 +89,10 @@ public class ProfileEditorActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int i, int i1, int i2){
                 if (viewModel.getDisplayName().getValue().equals(nameEditText.getText().toString())) {
                     saveButton.setEnabled(false);
+                    saveButton.setAlpha(.5f);
                 } else {
                     saveButton.setEnabled(true);
+                    saveButton.setAlpha(1f);
                 }
             }
 

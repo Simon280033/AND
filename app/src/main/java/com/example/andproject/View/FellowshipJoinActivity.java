@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.Entities.FellowshipRequest;
 import com.example.andproject.R;
@@ -79,7 +80,7 @@ public class FellowshipJoinActivity extends AppCompatActivity {
         final Observer<String> avatarObserver = new Observer<String>() {
             @Override
             public void onChanged(@Nullable final String newValue) {
-                Glide.with(FellowshipJoinActivity.this).load(Uri.parse(newValue)).into(ownerAvatarView);
+                Glide.with(FellowshipJoinActivity.this).load(Uri.parse(newValue)).apply(RequestOptions.circleCropTransform()).into(ownerAvatarView);
             }
         };
 

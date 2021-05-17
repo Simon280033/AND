@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.FellowshipViewModel;
@@ -84,7 +85,7 @@ public class FellowshipActivity extends AppCompatActivity {
         final Observer<String> avatarUrlObserver = new Observer<String>() {
             @Override
             public void onChanged(@Nullable final String newValue) {
-                Glide.with(FellowshipActivity.this).load(Uri.parse(newValue)).into(partnerAvatarView);
+                Glide.with(FellowshipActivity.this).load(Uri.parse(newValue)).apply(RequestOptions.circleCropTransform()).into(partnerAvatarView);
             }
         };
 
@@ -173,6 +174,11 @@ public class FellowshipActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable final Boolean newValue) {
                 paymentStatusButton.setEnabled(newValue);
+                if (newValue) {
+                    paymentStatusButton.setAlpha(1f);
+                } else {
+                    paymentStatusButton.setAlpha(.5f);
+                }
             }
         };
 
@@ -206,6 +212,11 @@ public class FellowshipActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable final Boolean newValue) {
                 receiptButton.setEnabled(newValue);
+                if (newValue) {
+                    receiptButton.setAlpha(1f);
+                } else {
+                    receiptButton.setAlpha(.5f);
+                }
             }
         };
 
@@ -239,6 +250,11 @@ public class FellowshipActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable final Boolean newValue) {
                 markAsDoneButton.setEnabled(newValue);
+                if (newValue) {
+                    markAsDoneButton.setAlpha(1f);
+                } else {
+                    markAsDoneButton.setAlpha(.5f);
+                }
             }
         };
 

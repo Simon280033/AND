@@ -17,6 +17,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.ProfileViewViewModel;
@@ -111,7 +112,7 @@ public class ProfileViewActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable final String newUrl) {
                 // We use glide to set the image
-                Glide.with(ProfileViewActivity.this).load(Uri.parse(newUrl)).into(imageView);
+                Glide.with(ProfileViewActivity.this).load(Uri.parse(newUrl)).apply(RequestOptions.circleCropTransform()).into(imageView);
             }
         };
 

@@ -92,6 +92,11 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
             viewModel.getPickupLocation();
             viewModel.getUsersLocation(this);
             createFellowshipButton.setEnabled(allInfoEntered());
+            if (allInfoEntered()) {
+                createFellowshipButton.setAlpha(1f);
+            } else {
+                createFellowshipButton.setAlpha(.5f);
+            }
         });
     }
 
@@ -136,6 +141,7 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
     // This method binds the create buttons-availability to whether or not all info is filled
     private void bindButtonAvailability() {
         createFellowshipButton.setEnabled(false); // Not enabled by default
+        createFellowshipButton.setAlpha(.5f);
 
         amountNeededEditText.addTextChangedListener (new TextWatcher() {
             @Override
@@ -146,6 +152,11 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2){
                     createFellowshipButton.setEnabled(allInfoEntered());
+                    if (allInfoEntered()) {
+                        createFellowshipButton.setAlpha(1f);
+                    } else {
+                        createFellowshipButton.setAlpha(.5f);
+                    }
             }
 
             @Override
@@ -163,6 +174,11 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 createFellowshipButton.setEnabled(allInfoEntered());
+                if (allInfoEntered()) {
+                    createFellowshipButton.setAlpha(1f);
+                } else {
+                    createFellowshipButton.setAlpha(.5f);
+                }
             }
 
             @Override
