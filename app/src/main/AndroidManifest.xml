@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight">
-        <activity android:name=".View.ChatActivity"></activity>
+        <activity android:name=".View.SignInActivity"></activity>
+        <activity android:name=".View.ChatActivity" />
         <activity android:name=".View.FellowshipActivity" />
         <activity android:name=".View.FellowshipRequestsActivity" />
         <activity android:name=".View.FindFellowshipsActivity" />
@@ -24,7 +25,7 @@
         <activity android:name=".View.ProfileViewActivity" />
         <activity android:name=".View.MainActivity" />
         <activity
-            android:name=".View.SignInActivity"
+            android:name=".View.SplashScreenActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
