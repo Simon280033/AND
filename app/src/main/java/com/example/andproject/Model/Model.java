@@ -36,6 +36,7 @@ public class Model {
 
     // Fellowship view
     private Fellowship fellowship;
+    private User fellowshipPartner;
 
     // Chat view
     private User chatReceiver;
@@ -57,6 +58,14 @@ public class Model {
         if(instance == null)
             instance = new Model(app);
         return instance;
+    }
+
+    public void setFellowshipPartner(User user) {
+        this.fellowshipPartner = user;
+    }
+
+    public User getFellowshipPartner() {
+        return this.fellowshipPartner;
     }
 
     public void setThisUser(User user) {

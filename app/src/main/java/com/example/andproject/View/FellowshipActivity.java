@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.ProgressDialog;
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,14 +41,13 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FellowshipActivity extends AppCompatActivity {
     private FellowshipViewModel viewModel;
 
     private boolean ownerOfFellowship;
-
-    private User fellowshipPartner;
 
     private ImageView partnerAvatarView;
 
@@ -68,20 +69,212 @@ public class FellowshipActivity extends AppCompatActivity {
             ownerOfFellowship = false;
         }
 
-        partnerAvatarView = findViewById(R.id.partnerAvatarView);
-        partnerNameTextView = findViewById(R.id.partnerNameTextView);
-        webShopTextView = findViewById(R.id.webShopTextView);
-        minimumAmountNeededTextView = findViewById(R.id.minimumAmountNeededTextView);
-        paymentMethodTextView = findViewById(R.id.paymentMethodTextView);
-        paymentStatusHeader = findViewById(R.id.paymentStatusHeader);
-        paymentStatusTextView = findViewById(R.id.paymentStatusTextView);
-        paymentStatusButton = findViewById(R.id.paymentStatusButton);
-        receiptNameTextView = findViewById(R.id.receiptNameTextView);
-        receiptButton = findViewById(R.id.receiptButton);
-        markAsDoneButton = findViewById(R.id.markAsDoneButton);
-        completionStatusTextView = findViewById(R.id.completionStatusTextView);
-        openChatButton = findViewById(R.id.openChatButton);
+        findViews();
 
+        setButtonActions();
+
+        bindUiElements();
+
+        viewModel.setProperties();
+    }
+
+    // This method binds the View's UI elements to the properties in the viewmodel
+    private void bindUiElements() {
+        // We bind the avatar
+        final Observer<String> avatarUrlObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                Glide.with(FellowshipActivity.this).load(Uri.parse(newValue)).into(partnerAvatarView);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getPartnerAvatar().observe(this, avatarUrlObserver);
+
+        // We bind the partnername
+        final Observer<String> partnerNameObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                partnerNameTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getPartnerName().observe(this, partnerNameObserver);
+
+        // We bind the web shop
+        final Observer<String> webShopObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                webShopTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getWebShop().observe(this, webShopObserver);
+
+        // We bind the minimum amount needed
+        final Observer<String> amountObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                minimumAmountNeededTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getMinimumAmount().observe(this, amountObserver);
+
+        // We bind the payment method
+        final Observer<String> paymentMethodObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                paymentMethodTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getPaymentMethod().observe(this, paymentMethodObserver);
+
+        // We bind the payment header text
+        final Observer<String> paymentHeaderObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                paymentStatusHeader.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getPaymentStatusHeaderText().observe(this, paymentHeaderObserver);
+
+        // We bind the payment status
+        final Observer<String> paymentStatusObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                paymentStatusTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getPaymentStatus().observe(this, paymentStatusObserver);
+
+        // We bind the payment status button text
+        final Observer<String> paymentStatusButtonTextObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                paymentStatusButton.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getPaymentStatusButtonText().observe(this, paymentStatusButtonTextObserver);
+
+        // We bind the payment status button availability
+        final Observer<Boolean> paymentStatusButtonAvailabilityObserver = new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable final Boolean newValue) {
+                paymentStatusButton.setEnabled(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getPaymentStatusButtonEnabled().observe(this, paymentStatusButtonAvailabilityObserver);
+
+        // We bind the receipt name/status
+        final Observer<String> receiptStatusObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                receiptNameTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getReceiptStatus().observe(this, receiptStatusObserver);
+
+        // We bind the receipt button text
+        final Observer<String> receiptButtonTextObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                receiptButton.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getReceiptButtonText().observe(this, receiptButtonTextObserver);
+
+        // We bind the receipt button availability
+        final Observer<Boolean> receiptButtonAvailabilityObserver = new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable final Boolean newValue) {
+                receiptButton.setEnabled(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getReceiptButtonEnabled().observe(this, receiptButtonAvailabilityObserver);
+
+        // We bind the completion status
+        final Observer<String> completionStatusObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                completionStatusTextView.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getCompletionStatus().observe(this, completionStatusObserver);
+
+        // We bind the mark as done button text
+        final Observer<String> markAsDoneButtonTextObserver = new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable final String newValue) {
+                markAsDoneButton.setText(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getMarkAsDoneButtonText().observe(this, markAsDoneButtonTextObserver);
+
+        // We bind the mark as done button availability
+        final Observer<Boolean> markAsDoneButtonAvailabilityObserver = new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable final Boolean newValue) {
+                markAsDoneButton.setEnabled(newValue);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getMarkAsDoneButtonEnabled().observe(this, markAsDoneButtonAvailabilityObserver);
+
+        // We bind the download status
+        final Observer<Boolean> downloadStatusObserver = new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable final Boolean downloadSuccessful) {
+                if (downloadSuccessful) {
+                    Toast.makeText(FellowshipActivity.this, "Succesfully download receipt as .PDF! Please check your downloads.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(FellowshipActivity.this, "ERROR: Failed to download receipt! Please try again.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getDownloadSuccessful().observe(this, downloadStatusObserver);
+
+        // We bind the fellowship completion status
+        final Observer<Boolean> fellowshipCompletionStatusObserver = new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable final Boolean fellowshipCompleted) {
+                if (fellowshipCompleted) {
+                    Toast.makeText(FellowshipActivity.this, "Fellowship completed!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getFellowshipDone().observe(this, fellowshipCompletionStatusObserver);
+    }
+
+    private void setButtonActions() {
         openChatButton.setOnClickListener((View v) -> {
             goToChat();
         });
@@ -97,33 +290,30 @@ public class FellowshipActivity extends AppCompatActivity {
         paymentStatusButton.setOnClickListener((View v) -> {
             paymentButtonMethod();
         });
+    }
 
-        setPartnerInfo();
-        setFirmProperties();
-        setPaymentProperties();
-        setReceiptProperties();
-        setMarkAsDoneProperties();
+    private void findViews() {
+        partnerAvatarView = findViewById(R.id.partnerAvatarView);
+        partnerNameTextView = findViewById(R.id.partnerNameTextView);
+        webShopTextView = findViewById(R.id.webShopTextView);
+        minimumAmountNeededTextView = findViewById(R.id.minimumAmountNeededTextView);
+        paymentMethodTextView = findViewById(R.id.paymentMethodTextView);
+        paymentStatusHeader = findViewById(R.id.paymentStatusHeader);
+        paymentStatusTextView = findViewById(R.id.paymentStatusTextView);
+        paymentStatusButton = findViewById(R.id.paymentStatusButton);
+        receiptNameTextView = findViewById(R.id.receiptNameTextView);
+        receiptButton = findViewById(R.id.receiptButton);
+        markAsDoneButton = findViewById(R.id.markAsDoneButton);
+        completionStatusTextView = findViewById(R.id.completionStatusTextView);
+        openChatButton = findViewById(R.id.openChatButton);
     }
 
     private void goToChat() {
-        // We set the chat info
-        viewModel.setChatReceiver(fellowshipPartner);
         startActivity(new Intent(this, ChatActivity.class));
     }
 
     private void paymentButtonMethod() {
-        if (ownerOfFellowship) {
-            if (viewModel.getViewFellowshipInfo().partnerPaid == 1 && viewModel.getViewFellowshipInfo().paymentApproved == 0) {
-                viewModel.getViewFellowshipInfo().approvePayment();
-            }
-        } else {
-            if (viewModel.getViewFellowshipInfo().partnerPaid == 0) {
-                viewModel.getViewFellowshipInfo().claimPayment();
-            } else if (viewModel.getViewFellowshipInfo().partnerPaid == 1) {
-                viewModel.getViewFellowshipInfo().retractPaymentClaim();
-            }
-        }
-        setPaymentProperties();
+        viewModel.paymentAction();
     }
 
     private void markAsDoneMethodForUser() {
@@ -156,7 +346,7 @@ public class FellowshipActivity extends AppCompatActivity {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int id) {
-                markAsDoneMethod(markAsDone);
+                viewModel.markAsDoneMethod(markAsDone);
             } });
 
         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -167,220 +357,15 @@ public class FellowshipActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    private void markAsDoneMethod(boolean markAsDone) {
-        int bit = 0;
-        if (markAsDone) {
-            bit = 1;
-        }
-
-        if (ownerOfFellowship) {
-            viewModel.getViewFellowshipInfo().setOwnerCompletionStatus(bit);
-        } else {
-            viewModel.getViewFellowshipInfo().setPartnerCompletionStatus(bit);
-        }
-        setMarkAsDoneProperties();
-    }
-
-    private void setMarkAsDoneProperties() {
-        if (viewModel.getViewFellowshipInfo().partnerPaid == 1 && viewModel.getViewFellowshipInfo().paymentApproved == 1) {
-            markAsDoneButton.setEnabled(true);
-        } else {
-            markAsDoneButton.setEnabled(false);
-        }
-        if (viewModel.getViewFellowshipInfo().partnerCompleted == 1 && viewModel.getViewFellowshipInfo().ownerCompleted == 1) {
-            completionStatusTextView.setText("Both parties have marked the Fellowship as completed!");
-            markAsDoneButton.setEnabled(false);
-
-            viewModel.incrementCompletionCounterForBothUsers(viewModel.getViewFellowshipInfo().creatorId, viewModel.getViewFellowshipInfo().partnerId);
-
-            viewModel.getViewFellowshipInfo().setFellowshipAsCompleted();
-
-            Toast.makeText(FellowshipActivity.this, "Fellowship done!",
-                    Toast.LENGTH_LONG).show();
-        }
-        if (ownerOfFellowship) {
-            setMarkAsDonePropertiesForOwner();
-        } else {
-            setMarkAsDonePropertiesForPartner();
-        }
-    }
-
-    private void setMarkAsDonePropertiesForOwner() {
-        markAsDoneButton.setEnabled(true);
-        if (viewModel.getViewFellowshipInfo().ownerCompleted == 1) {
-            completionStatusTextView.setText("You have marked the Fellowship as completed. Partner pending...");
-            markAsDoneButton.setText("RETRACT COMPLETION");
-        }
-        if (viewModel.getViewFellowshipInfo().partnerCompleted == 1) {
-            completionStatusTextView.setText("Partner has marked the Fellowship as completed. Response pending...");
-            markAsDoneButton.setText("MARK FELLOWSHIP AS COMPLETED");
-        }
-    }
-
-    private void setMarkAsDonePropertiesForPartner() {
-        markAsDoneButton.setEnabled(true);
-        if (viewModel.getViewFellowshipInfo().partnerCompleted == 1) {
-            completionStatusTextView.setText("You have marked the Fellowship as completed. Partner pending...");
-            markAsDoneButton.setText("RETRACT COMPLETION");
-        }
-        if (viewModel.getViewFellowshipInfo().ownerCompleted == 1) {
-            completionStatusTextView.setText("Partner has marked the Fellowship as completed. Response pending...");
-            markAsDoneButton.setText("MARK FELLOWSHIP AS COMPLETED");
-        }
-    }
-
     private void receiptMethodForUser() {
         if (ownerOfFellowship) {
             choosePdf();
         } else {
             try {
-                downloadReceipt();
+                viewModel.downloadReceipt();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private void downloadReceipt() throws IOException {
-        FirebaseStorage storage = FirebaseStorage.getInstance("gs://fellowshippers-aec83.appspot.com/");
-        StorageReference storageRef = storage.getReference();
-
-        StorageReference receiptsRef = storageRef.child("receipts/" + viewModel.getViewFellowshipInfo().id);
-
-        File localFile = File.createTempFile("receipt", "pdf");
-
-        receiptsRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                // Local temp file has been created
-                Toast.makeText(FellowshipActivity.this, "Succesfully download receipt as .PDF! Please check your downloads.", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-                Toast.makeText(FellowshipActivity.this, "ERROR: Failed to download receipt! Please try again.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void setPartnerInfo() {
-        // We get the partner of the fellowship
-        String partnerId = viewModel.getViewFellowshipInfo().creatorId;
-        if (ownerOfFellowship) {
-            partnerId = viewModel.getViewFellowshipInfo().partnerId;
-        }
-        // We get their displayName and avatar URL
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-
-        Query query = myRef.child("users").orderByChild("id").equalTo(partnerId);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        String displayName = ((HashMap<String, String>) issue.getValue()).get("displayName");
-                        String imageUrl = ((HashMap<String, String>) issue.getValue()).get("imageUrl");
-                        String email = ((HashMap<String, String>) issue.getValue()).get("email");
-                        String userId = ((HashMap<String, String>) issue.getValue()).get("id");
-
-                        partnerNameTextView.setText(displayName);
-                        Glide.with(FellowshipActivity.this).load(Uri.parse(imageUrl)).into(partnerAvatarView);
-
-                        fellowshipPartner = new User(userId, displayName, imageUrl, email);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    // This method sets the properties that are the same regardless of whether the user is the owner or not
-    private void setFirmProperties() {
-        webShopTextView.setText(viewModel.getViewFellowshipInfo().webshop);
-        minimumAmountNeededTextView.setText(viewModel.getViewFellowshipInfo().amountNeeded + " DKK");
-        paymentMethodTextView.setText(viewModel.getViewFellowshipInfo().paymentMethod);
-    }
-
-    // This method handles the the payment area
-    private void setPaymentProperties()  {
-        if (ownerOfFellowship) {
-            setPaymentPropertiesForOwner();
-        } else {
-            setPaymentPropertiesForPartner();
-        }
-    }
-
-    // This method sets the payment properties if the user does NOT own the Fellowship
-    private void setPaymentPropertiesForPartner()  {
-        paymentStatusButton.setEnabled(true);
-        paymentStatusButton.setText("CLICK HERE IF YOU HAVE PAID");
-
-        paymentStatusHeader.setText("Your payment status:");
-        if (viewModel.getViewFellowshipInfo().partnerPaid == 1) {
-            paymentStatusButton.setText("CLICK HERE IF YOU HAVE NOT PAID");
-            paymentStatusTextView.setText("Paid. Pending approval...");
-            if (viewModel.getViewFellowshipInfo().paymentApproved == 1) {
-                paymentStatusTextView.setText("Payment approved by partner.");
-                paymentStatusButton.setEnabled(false);
-            }
-        } else {
-            paymentStatusTextView.setText("Not paid.");
-        }
-    }
-
-    // This method sets the payment properties if the user DOES own the Fellowship
-    private void setPaymentPropertiesForOwner()  {
-        paymentStatusButton.setEnabled(false);
-        paymentStatusButton.setText("APPROVE PARTNER'S PAYMENT");
-
-        paymentStatusHeader.setText("Partner payment status:");
-        if (viewModel.getViewFellowshipInfo().partnerPaid == 1) {
-            paymentStatusTextView.setText("Paid. Please approve if received...");
-            paymentStatusButton.setEnabled(true);
-            if (viewModel.getViewFellowshipInfo().paymentApproved == 1) {
-                paymentStatusTextView.setText("Payment approved.");
-                paymentStatusButton.setEnabled(false);
-            }
-        } else {
-            paymentStatusTextView.setText("Not paid.");
-        }
-    }
-
-    private void setReceiptProperties() {
-        if (ownerOfFellowship) {
-            setReceiptPropertiesForOwner();
-        } else {
-            setReceiptPropertiesForPartner();
-        }
-    }
-
-    private void setReceiptPropertiesForPartner() {
-        receiptButton.setText("DOWNLOAD RECEIPT (.pdf)");
-        // We check if a receipt has been uploaded
-        if (viewModel.getViewFellowshipInfo().receiptUrl.equals("null")) {
-            receiptNameTextView.setText("No receipt added.");
-            receiptButton.setEnabled(false);
-        } else {
-            receiptNameTextView.setText("Receipt attached");
-            receiptButton.setEnabled(true);
-        }
-    }
-
-    private void setReceiptPropertiesForOwner() {
-        receiptButton.setText("UPLOAD RECEIPT (.pdf)");
-        // We check if a receipt has been uploaded
-        if (viewModel.getViewFellowshipInfo().receiptUrl.equals("null")) {
-            receiptNameTextView.setText("No receipt added.");
-            receiptButton.setEnabled(true);
-        } else {
-            receiptNameTextView.setText("Receipt attached");
-            receiptButton.setEnabled(true);
-            receiptButton.setText("REPLACE RECEIPT (.pdf)");
         }
     }
 
@@ -439,7 +424,7 @@ public class FellowshipActivity extends AppCompatActivity {
                         dialog.dismiss();
                         Toast.makeText(FellowshipActivity.this, "UploadedFailed", Toast.LENGTH_SHORT).show();
                     }
-                    setReceiptProperties();
+                    viewModel.setReceiptProperties();
                 }
             });
         }
