@@ -1,5 +1,6 @@
 package com.example.andproject.View;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,6 +38,8 @@ public class SignInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(SignInViewModel.class);
+        viewModel.setUserLocation(this);
+
         checkIfSignedIn();
         setContentView(R.layout.signin_activity);
     }

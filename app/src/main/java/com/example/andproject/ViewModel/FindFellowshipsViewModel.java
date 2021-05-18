@@ -40,42 +40,9 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
     private ArrayList<String> pendingsRequestsFellowships;
     private ArrayList<Fellowship> fellowshipsDetails;
 
-    // Users location, to calculate distance to pickups
-    private String currentLocation;
-
     public FindFellowshipsViewModel(Application app){
         super(app);
         model = Model.getInstance(app);
-    }
-
-    // YOU HAVE MANUALLY ENABLED LOCATIONS FOR APP!!!! FIND A WAY TO PROMPT USER TO ENABLE IT
-    public void getUsersLocation(Context context) {
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
-
-        String latAndLong = null;
-
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener((Activity) context, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
-                            currentLocation = location.getLatitude() + ", " + location.getLongitude();
-                            System.out.println("læs: location: " + currentLocation);
-                        }
-                    }
-                });
     }
 
     public Fellowship getFellowshipAt(int index) {
@@ -167,7 +134,7 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
                                 Fellowship fs = new Fellowship(id, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + ownerCompleted), (int) Integer.parseInt("" + partnerCompleted), (int) Integer.parseInt("" + isCompleted));
                                 joinableFellowships.put(fellowshipId, fs);
 
-                                Pair<Fellowship, String> pair = new Pair<Fellowship, String>(fs, currentLocation);
+                                Pair<Fellowship, String> pair = new Pair<Fellowship, String>(fs, model.getUserLocation());
 
                                 listItems.add(pair);
                                 fellowshipsDetails.add(fs);

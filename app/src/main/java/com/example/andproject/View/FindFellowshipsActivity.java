@@ -42,8 +42,6 @@ public class FindFellowshipsActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_find_fellowships);
 
-        viewModel.getUsersLocation(this);
-
         fellowshipsList = findViewById(R.id.fellowshipsList);
 
         setSpinnerSelectionActions();

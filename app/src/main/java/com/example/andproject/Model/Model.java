@@ -30,6 +30,7 @@ public class Model {
     // Session data
     // Customer user data (different from default authenticator data)
     private User thisUser;
+    private String userLocation;
 
     // Profile view
     private User viewProfileOf;
@@ -58,6 +59,14 @@ public class Model {
         if(instance == null)
             instance = new Model(app);
         return instance;
+    }
+
+    public String getUserLocation() {
+        return userLocation;
+    }
+
+    public void setUserLocation(String location) {
+        this.userLocation = location;
     }
 
     public void setFellowshipPartner(User user) {
