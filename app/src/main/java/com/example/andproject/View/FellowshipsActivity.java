@@ -16,6 +16,9 @@ import android.widget.ListView;
 
 import com.bumptech.glide.Glide;
 import com.example.andproject.Entities.Fellowship;
+import com.example.andproject.Entities.JoinedFellowshipAdapter;
+import com.example.andproject.Entities.Message;
+import com.example.andproject.Entities.MessageAdapter;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.FellowshipsViewModel;
 import com.google.firebase.database.DataSnapshot;
@@ -111,16 +114,12 @@ public class FellowshipsActivity extends AppCompatActivity {
     // This method binds the View's UI elements to the properties in the viewmodel
     private void bindUiElements() {
         // We bind the spinner for our own Fellowships
-        final Observer<ArrayList<String>> ownFellowshipsObserver = new Observer<ArrayList<String>>() {
+        final Observer<ArrayList<Fellowship>> ownFellowshipsObserver = new Observer<ArrayList<Fellowship>>() {
             @Override
-            public void onChanged(@Nullable final ArrayList<String> newValue) {
+            public void onChanged(@Nullable final ArrayList<Fellowship> newValue) {
+                JoinedFellowshipAdapter madb = new JoinedFellowshipAdapter(FellowshipsActivity.this, 0, newValue);
 
-                //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
-                ArrayAdapter<String> adapter =new ArrayAdapter<String>(FellowshipsActivity.this,
-                        android.R.layout.simple_list_item_1,
-                        newValue);
-
-                myFellowshipsList.setAdapter(adapter);
+                myFellowshipsList.setAdapter(madb);
 
             }
         };

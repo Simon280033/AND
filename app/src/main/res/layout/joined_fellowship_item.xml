@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/item_bg"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/webShopItemHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Web shop:"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/webShopItemText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/webShopItemHeader"
+        android:layout_toRightOf="@+id/webShopItemHeader"
+        android:text=""
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/statusItemHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@+id/statusItemImage"
+        android:layout_alignBottom="@+id/webShopItemHeader"
+        android:text="Completed:" />
+
+    <ImageView
+        android:id="@+id/statusItemImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_alignBottom="@+id/webShopItemHeader"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:id="@+id/amountItemHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/webShopItemHeader"
+        android:layout_alignLeft="@+id/webShopItemHeader"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:text="Amount needed:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/amountItemText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/webShopItemHeader"
+        android:layout_toRightOf="@+id/amountItemHeader"
+        android:layout_marginTop="5dp"
+        android:text=""
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="18sp" />
+
+</RelativeLayout>
