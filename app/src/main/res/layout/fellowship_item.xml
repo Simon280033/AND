@@ -104,7 +104,7 @@
         android:layout_marginRight="5dp"
         android:layout_alignBottom="@+id/webShopItemHeader"
         android:layout_alignParentEnd="true"
-        android:text="test"/>
+        android:text=""/>
 
     <LinearLayout
         android:layout_width="wrap_content"
