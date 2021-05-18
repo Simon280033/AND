@@ -7,6 +7,9 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
 
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
@@ -16,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
     private MainActivityViewModel viewModel;
 
     private Button viewProfileButton, fellowshipsButton, signOutButton;
+
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
