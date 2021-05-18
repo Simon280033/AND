@@ -1,9 +1,7 @@
 package com.example.andproject.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -14,20 +12,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.andproject.Entities.Message;
-import com.example.andproject.Entities.MessageAdapter;
+import com.example.andproject.Entities.MessageItemAdapter;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.ChatViewModel;
-import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ChatActivity extends AppCompatActivity {
     private ChatViewModel viewModel;
@@ -59,7 +49,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onChanged(@Nullable final ArrayList<Message> newValue) {
                 System.out.println("læs: messagelist changed");
                 //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
-                MessageAdapter madb = new MessageAdapter(ChatActivity.this, 0, newValue);
+                MessageItemAdapter madb = new MessageItemAdapter(ChatActivity.this, 0, newValue);
 
                 messageList.setAdapter(madb);
             }

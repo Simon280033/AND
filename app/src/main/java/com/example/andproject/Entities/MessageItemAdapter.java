@@ -19,12 +19,12 @@ import com.example.andproject.View.ProfileViewActivity;
 
 import java.util.ArrayList;
 
-public class MessageAdapter extends ArrayAdapter<Message> {
+public class MessageItemAdapter extends ArrayAdapter<Message> {
     private Activity activity;
     private ArrayList<Message> messageList;
     private static LayoutInflater inflater = null;
 
-    public MessageAdapter (Activity activity, int textViewResourceId,ArrayList<Message> messageList) {
+    public MessageItemAdapter(Activity activity, int textViewResourceId, ArrayList<Message> messageList) {
         super(activity, textViewResourceId, messageList);
         try {
             this.activity = activity;

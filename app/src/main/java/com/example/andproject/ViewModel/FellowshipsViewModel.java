@@ -25,7 +25,7 @@ public class FellowshipsViewModel extends AndroidViewModel {
 
     // Bindable attributes to be shown in UI
     private MutableLiveData<ArrayList<Fellowship>> yourFellowshipsList;
-    private MutableLiveData<ArrayList<String>> joinedFellowshipsList;
+    private MutableLiveData<ArrayList<Fellowship>> joinedFellowshipsList;
 
     // Lists holding the full data of the fellowships
     private ArrayList<Fellowship> myFellowships, joinedFellowships;
@@ -51,9 +51,9 @@ public class FellowshipsViewModel extends AndroidViewModel {
         return yourFellowshipsList;
     }
 
-    public MutableLiveData<ArrayList<String>> getJoinedFellowshipsList() {
+    public MutableLiveData<ArrayList<Fellowship>> getJoinedFellowshipsList() {
         if (joinedFellowshipsList == null) {
-            joinedFellowshipsList = new MutableLiveData<ArrayList<String>>();
+            joinedFellowshipsList = new MutableLiveData<ArrayList<Fellowship>>();
             joinedFellowships = new ArrayList<>();
         }
         return joinedFellowshipsList;
@@ -122,7 +122,7 @@ public class FellowshipsViewModel extends AndroidViewModel {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-                    ArrayList<String> listItems=new ArrayList<String>();
+                    ArrayList<Fellowship> listItems=new ArrayList<Fellowship>();
                     // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
                         String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("id");
@@ -145,10 +145,9 @@ public class FellowshipsViewModel extends AndroidViewModel {
                         if (isCompleted > 0) {
                             completionStatus = "YES";
                         }
-                        listItems.add("Web shop: " + webShop + ", amount needed: " + amountNeeded + " DKK, completed: " + completionStatus);
-
                         Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + ownerCompleted), (int) Integer.parseInt("" + partnerCompleted), (int) Integer.parseInt("" + isCompleted));
                         joinedFellowships.add(fs);
+                        listItems.add(fs);
                     }
                     joinedFellowshipsList.setValue(listItems);
                 }

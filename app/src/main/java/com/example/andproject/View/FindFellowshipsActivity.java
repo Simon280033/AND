@@ -14,6 +14,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.andproject.Entities.Fellowship;
+import com.example.andproject.Entities.FellowshipItemAdapter;
+import com.example.andproject.Entities.JoinedFellowshipItemAdapter;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.FindFellowshipsViewModel;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +42,8 @@ public class FindFellowshipsActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_find_fellowships);
 
+        viewModel.getUsersLocation(this);
+
         fellowshipsList = findViewById(R.id.fellowshipsList);
 
         setSpinnerSelectionActions();
@@ -65,16 +69,12 @@ public class FindFellowshipsActivity extends AppCompatActivity {
     // This method binds the View's UI elements to the properties in the viewmodel
     private void bindUiElements() {
         // We bind the spinner for our own Fellowships
-        final Observer<ArrayList<String>> fellowshipsObserver = new Observer<ArrayList<String>>() {
+        final Observer<ArrayList<Pair<Fellowship, String>>> fellowshipsObserver = new Observer<ArrayList<Pair<Fellowship, String>>>() {
             @Override
-            public void onChanged(@Nullable final ArrayList<String> newValue) {
+            public void onChanged(@Nullable final ArrayList<Pair<Fellowship, String>> newValue) {
+                FellowshipItemAdapter madb = new FellowshipItemAdapter(FindFellowshipsActivity.this, 0, newValue);
 
-                //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
-                ArrayAdapter<String> adapter =new ArrayAdapter<String>(FindFellowshipsActivity.this,
-                        android.R.layout.simple_list_item_1,
-                        newValue);
-
-                fellowshipsList.setAdapter(adapter);
+                fellowshipsList.setAdapter(madb);
             }
         };
 

@@ -16,12 +16,12 @@ import com.example.andproject.R;
 
 import java.util.ArrayList;
 
-public class JoinedFellowshipAdapter extends ArrayAdapter<Fellowship> {
+public class JoinedFellowshipItemAdapter extends ArrayAdapter<Fellowship> {
     private Activity activity;
     private ArrayList<Fellowship> fellowshipList;
     private static LayoutInflater inflater = null;
 
-    public JoinedFellowshipAdapter(Activity activity, int textViewResourceId, ArrayList<Fellowship> fellowshipList) {
+    public JoinedFellowshipItemAdapter(Activity activity, int textViewResourceId, ArrayList<Fellowship> fellowshipList) {
         super(activity, textViewResourceId, fellowshipList);
         try {
             this.activity = activity;

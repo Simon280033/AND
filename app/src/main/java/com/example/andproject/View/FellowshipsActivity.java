@@ -6,30 +6,18 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.bumptech.glide.Glide;
 import com.example.andproject.Entities.Fellowship;
-import com.example.andproject.Entities.JoinedFellowshipAdapter;
-import com.example.andproject.Entities.Message;
-import com.example.andproject.Entities.MessageAdapter;
+import com.example.andproject.Entities.JoinedFellowshipItemAdapter;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.FellowshipsViewModel;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class FellowshipsActivity extends AppCompatActivity {
     private FellowshipsViewModel viewModel;
@@ -117,10 +105,9 @@ public class FellowshipsActivity extends AppCompatActivity {
         final Observer<ArrayList<Fellowship>> ownFellowshipsObserver = new Observer<ArrayList<Fellowship>>() {
             @Override
             public void onChanged(@Nullable final ArrayList<Fellowship> newValue) {
-                JoinedFellowshipAdapter madb = new JoinedFellowshipAdapter(FellowshipsActivity.this, 0, newValue);
+                JoinedFellowshipItemAdapter madb = new JoinedFellowshipItemAdapter(FellowshipsActivity.this, 0, newValue);
 
                 myFellowshipsList.setAdapter(madb);
-
             }
         };
 
@@ -128,16 +115,11 @@ public class FellowshipsActivity extends AppCompatActivity {
         viewModel.getYourFellowshipsList().observe(this, ownFellowshipsObserver);
 
         // We bind the spinner for our joined Fellowships
-        final Observer<ArrayList<String>> joinedFellowshipsObserver = new Observer<ArrayList<String>>() {
+        final Observer<ArrayList<Fellowship>> joinedFellowshipsObserver = new Observer<ArrayList<Fellowship>>() {
             @Override
-            public void onChanged(@Nullable final ArrayList<String> newValue) {
-
-                //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
-                ArrayAdapter<String> adapter =new ArrayAdapter<String>(FellowshipsActivity.this,
-                        android.R.layout.simple_list_item_1,
-                        newValue);
-
-                joinedFellowshipsList.setAdapter(adapter);
+            public void onChanged(@Nullable final ArrayList<Fellowship> newValue) {
+                JoinedFellowshipItemAdapter madb = new JoinedFellowshipItemAdapter(FellowshipsActivity.this, 0, newValue);
+                joinedFellowshipsList.setAdapter(madb);
             }
         };
 
