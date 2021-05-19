@@ -71,11 +71,11 @@ public class ProfileCommentItemAdapter extends ArrayAdapter<ProfileComment> {
                 holder = (ViewHolder) vi.getTag();
             }
 
-            holder.messageUser.setText(messageList.get(position).senderName);
+            holder.messageUser.setText(messageList.get(position).getSenderName());
             holder.messageTime.setText(messageList.get(position).getTime());
-            holder.messageText.setText(messageList.get(position).messageText);
+            holder.messageText.setText(messageList.get(position).getMessageText());
             // We use glide to set the image
-            Glide.with(holder.messageAvatarView).load(Uri.parse(messageList.get(position).senderImageUrl)).apply(RequestOptions.circleCropTransform()).into(holder.messageAvatarView);
+            Glide.with(holder.messageAvatarView).load(Uri.parse(messageList.get(position).getSenderImageUrl())).apply(RequestOptions.circleCropTransform()).into(holder.messageAvatarView);
 
         } catch (Exception e) {
 

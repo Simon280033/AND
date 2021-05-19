@@ -69,13 +69,13 @@ public class JoinedFellowshipItemAdapter extends ArrayAdapter<Fellowship> {
                 holder = (ViewHolder) vi.getTag();
             }
 
-            holder.webShopItemText.setText(fellowshipList.get(position).webshop);
-            if (fellowshipList.get(position).isCompleted == 1) {
+            holder.webShopItemText.setText(fellowshipList.get(position).getWebshop());
+            if (fellowshipList.get(position).getIsCompleted() == 1) {
                 holder.statusItemImage.setImageResource(R.drawable.checkmark);
             } else {
                 holder.statusItemImage.setImageResource(R.drawable.cross);
             }
-            holder.amountItemText.setText(fellowshipList.get(position).amountNeeded + " DKK");
+            holder.amountItemText.setText(fellowshipList.get(position).getAmountNeeded() + " DKK");
 
         } catch (Exception e) {
 

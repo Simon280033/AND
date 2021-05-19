@@ -174,7 +174,7 @@ public class ProfileEditorViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(Uri uri) {
                 User updatedUser = user;
-                updatedUser.imageUrl = uri.toString();
+                updatedUser.setImageUrl(uri.toString());
                 myRef.setValue(updatedUser);
             }
         }).addOnFailureListener(new OnFailureListener() {

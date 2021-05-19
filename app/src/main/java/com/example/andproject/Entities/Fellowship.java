@@ -5,21 +5,21 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class Fellowship {
 
-    public String id;
-    public String creatorId;
-    public String webshop;
-    public String category;
-    public int amountNeeded;
-    public String paymentMethod;
-    public String deadline;
-    public String pickupCoordinates;
-    public String partnerId;
-    public int partnerPaid;
-    public int paymentApproved;
-    public String receiptUrl;
-    public int ownerCompleted;
-    public int partnerCompleted;
-    public int isCompleted; // We use this as a BIT - 1 = TRUE, 0 = FALSE
+    private String id;
+    private String creatorId;
+    private String webshop;
+    private String category;
+    private int amountNeeded;
+    private String paymentMethod;
+    private String deadline;
+    private String pickupCoordinates;
+    private String partnerId;
+    private int partnerPaid;
+    private int paymentApproved;
+    private String receiptUrl;
+    private int ownerCompleted;
+    private int partnerCompleted;
+    private int isCompleted; // We use this as a BIT - 1 = TRUE, 0 = FALSE
 
     public Fellowship(String id, String creatorId, String webshop, String category, int amountNeeded, String paymentMethod, String deadline, String pickupCoordinates, String partnerId, int partnerPaid, int paymentApproved, String receiptUrl, int ownerCompleted, int partnerCompleted, int isCompleted) {
         this.id = id;
@@ -36,6 +36,122 @@ public class Fellowship {
         this.receiptUrl = receiptUrl;
         this.ownerCompleted = ownerCompleted;
         this.partnerCompleted = partnerCompleted;
+        this.isCompleted = isCompleted;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public String getWebshop() {
+        return webshop;
+    }
+
+    public void setWebshop(String webshop) {
+        this.webshop = webshop;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public int getAmountNeeded() {
+        return amountNeeded;
+    }
+
+    public void setAmountNeeded(int amountNeeded) {
+        this.amountNeeded = amountNeeded;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
+    }
+
+    public String getPickupCoordinates() {
+        return pickupCoordinates;
+    }
+
+    public void setPickupCoordinates(String pickupCoordinates) {
+        this.pickupCoordinates = pickupCoordinates;
+    }
+
+    public String getPartnerId() {
+        return partnerId;
+    }
+
+    public void setPartnerId(String partnerId) {
+        this.partnerId = partnerId;
+    }
+
+    public int getPartnerPaid() {
+        return partnerPaid;
+    }
+
+    public void setPartnerPaid(int partnerPaid) {
+        this.partnerPaid = partnerPaid;
+    }
+
+    public int getPaymentApproved() {
+        return paymentApproved;
+    }
+
+    public void setPaymentApproved(int paymentApproved) {
+        this.paymentApproved = paymentApproved;
+    }
+
+    public String getReceiptUrl() {
+        return receiptUrl;
+    }
+
+    public int getOwnerCompleted() {
+        return ownerCompleted;
+    }
+
+    public void setOwnerCompleted(int ownerCompleted) {
+        this.ownerCompleted = ownerCompleted;
+    }
+
+    public int getPartnerCompleted() {
+        return partnerCompleted;
+    }
+
+    public void setPartnerCompleted(int partnerCompleted) {
+        this.partnerCompleted = partnerCompleted;
+    }
+
+    public int getIsCompleted() {
+        return isCompleted;
+    }
+
+    public void setIsCompleted(int isCompleted) {
         this.isCompleted = isCompleted;
     }
 

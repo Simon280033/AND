@@ -66,7 +66,7 @@ public class FellowshipActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fellowship);
 
         // We start out by checking whether or not the user is the owner of the fellowship
-        if (viewModel.getViewFellowshipInfo().creatorId.equals(viewModel.getCurrentUserData().getValue().getUid())) {
+        if (viewModel.getViewFellowshipInfo().getCreatorId().equals(viewModel.getCurrentUserData().getValue().getUid())) {
             ownerOfFellowship = true;
         } else {
             ownerOfFellowship = false;
@@ -347,13 +347,13 @@ public class FellowshipActivity extends AppCompatActivity {
 
     private void markAsDoneMethodForUser() {
         if (ownerOfFellowship) {
-            if (viewModel.getViewFellowshipInfo().ownerCompleted == 0) {
+            if (viewModel.getViewFellowshipInfo().getOwnerCompleted() == 0) {
                 showOptionsForMarkingAsDone(true);
             } else {
                 showOptionsForMarkingAsDone(false);
             }
         } else {
-            if (viewModel.getViewFellowshipInfo().partnerCompleted == 0) {
+            if (viewModel.getViewFellowshipInfo().getPartnerCompleted() == 0) {
                 showOptionsForMarkingAsDone(true);
             } else {
                 showOptionsForMarkingAsDone(false);
@@ -476,7 +476,7 @@ public class FellowshipActivity extends AppCompatActivity {
             Toast.makeText(FellowshipActivity.this, imageuri.toString(), Toast.LENGTH_SHORT).show();
 
             // Here we are uploading the pdf in firebase storage with the name of current time
-            final StorageReference filepath = storageReference.child(viewModel.getViewFellowshipInfo().id);
+            final StorageReference filepath = storageReference.child(viewModel.getViewFellowshipInfo().getId());
             Toast.makeText(FellowshipActivity.this, filepath.getName(), Toast.LENGTH_SHORT).show();
             filepath.putFile(imageuri).continueWithTask(new Continuation() {
                 @Override

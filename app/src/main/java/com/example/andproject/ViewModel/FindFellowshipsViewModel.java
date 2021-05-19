@@ -78,31 +78,31 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
         boolean met = true;
 
         if(!this.webShop.equals("Any")) {
-            if (!fs.webshop.equals(this.webShop)) {
+            if (!fs.getWebshop().equals(this.webShop)) {
                 met = false;
             }
         }
         if(!this.category.equals("Any")) {
-            if (!fs.category.equals(this.category)) {
+            if (!fs.getCategory().equals(this.category)) {
                 met = false;
             }
         }
         if (this.distance != -1) {
-            if (distanceBetween(model.getUserLocation(), fs.pickupCoordinates) > this.distance) {
+            if (distanceBetween(model.getUserLocation(), fs.getPickupCoordinates()) > this.distance) {
                 met = false;
             }
         }
 
         if (this.amount != -1) {
-            if (fs.amountNeeded > this.amount) {
+            if (fs.getAmountNeeded() > this.amount) {
                 met = false;
             }
         }
 
         if (met) {
-            System.out.println("Criterias met for fellowship " + fs.id);
+            System.out.println("Criterias met for fellowship " + fs.getId());
         } else {
-            System.out.println("Criterias not met for fellowship " + fs.id);
+            System.out.println("Criterias not met for fellowship " + fs.getId());
         }
         return met;
     }
@@ -274,7 +274,7 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
     public void setJoinableFellowships() {
         HashMap<String, Fellowship> joinableFellowships = new HashMap<>();
         for (Fellowship fs : fellowshipsDetails) {
-            joinableFellowships.put(fs.id, fs);
+            joinableFellowships.put(fs.getId(), fs);
         }
         model.setJoinableFellowships(joinableFellowships);
     }

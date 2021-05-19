@@ -69,7 +69,7 @@ public class FellowshipViewModel extends AndroidViewModel {
         model = Model.getInstance(app);
 
         // We start out by checking whether or not the user is the owner of the fellowship
-        if (model.getViewFellowshipInfo().creatorId.equals(model.getCurrentUserData().getValue().getUid())) {
+        if (model.getViewFellowshipInfo().getCreatorId().equals(model.getCurrentUserData().getValue().getUid())) {
             ownerOfFellowship = true;
         } else {
             ownerOfFellowship = false;
@@ -86,13 +86,13 @@ public class FellowshipViewModel extends AndroidViewModel {
 
     public void submitComment(String message) {
         String senderId = model.getCurrentUserData().getValue().getUid();
-        String senderName = model.getThisUser().displayName;
-        String senderImageUrl = model.getThisUser().imageUrl;
-        String receiverId = model.getFellowshipPartner().id;
+        String senderName = model.getThisUser().getDisplayName();
+        String senderImageUrl = model.getThisUser().getImageUrl();
+        String receiverId = model.getFellowshipPartner().getId();
 
         ProfileComment pc = new ProfileComment(senderId, senderName, senderImageUrl, receiverId, message);
         FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/")
-                .getReference().child("profileComments").child(model.getFellowshipPartner().id)
+                .getReference().child("profileComments").child(model.getFellowshipPartner().getId())
                 .setValue(pc);
     }
 
@@ -107,13 +107,13 @@ public class FellowshipViewModel extends AndroidViewModel {
 
     public void paymentAction() {
         if (ownerOfFellowship) {
-            if (model.getViewFellowshipInfo().partnerPaid == 1 && model.getViewFellowshipInfo().paymentApproved == 0) {
+            if (model.getViewFellowshipInfo().getPartnerPaid() == 1 && model.getViewFellowshipInfo().getPaymentApproved() == 0) {
                 model.getViewFellowshipInfo().approvePayment();
             }
         } else {
-            if (model.getViewFellowshipInfo().partnerPaid == 0) {
+            if (model.getViewFellowshipInfo().getPartnerPaid() == 0) {
                 model.getViewFellowshipInfo().claimPayment();
-            } else if (model.getViewFellowshipInfo().partnerPaid == 1) {
+            } else if (model.getViewFellowshipInfo().getPartnerPaid() == 1) {
                 model.getViewFellowshipInfo().retractPaymentClaim();
             }
         }
@@ -135,16 +135,16 @@ public class FellowshipViewModel extends AndroidViewModel {
     }
 
     private void setMarkAsDoneProperties() {
-        if (model.getViewFellowshipInfo().partnerPaid == 1 && model.getViewFellowshipInfo().paymentApproved == 1) {
+        if (model.getViewFellowshipInfo().getPartnerPaid() == 1 && model.getViewFellowshipInfo().getPaymentApproved() == 1) {
             markAsDoneButtonEnabled.setValue(true);
         } else {
             markAsDoneButtonEnabled.setValue(false);
         }
-        if (model.getViewFellowshipInfo().partnerCompleted == 1 && model.getViewFellowshipInfo().ownerCompleted == 1) {
+        if (model.getViewFellowshipInfo().getPartnerCompleted() == 1 && model.getViewFellowshipInfo().getOwnerCompleted() == 1) {
             completionStatus.setValue("Both parties have marked the Fellowship as completed!");
             markAsDoneButtonEnabled.setValue(false);
 
-            model.incrementCompletionCounterForBothUsers(model.getViewFellowshipInfo().creatorId, model.getViewFellowshipInfo().partnerId);
+            model.incrementCompletionCounterForBothUsers(model.getViewFellowshipInfo().getCreatorId(), model.getViewFellowshipInfo().getPartnerId());
 
             model.getViewFellowshipInfo().setFellowshipAsCompleted();
 
@@ -158,22 +158,22 @@ public class FellowshipViewModel extends AndroidViewModel {
     }
 
     private void setMarkAsDonePropertiesForOwner() {
-        if (model.getViewFellowshipInfo().ownerCompleted == 1) {
+        if (model.getViewFellowshipInfo().getOwnerCompleted() == 1) {
             completionStatus.setValue("You have marked the Fellowship as completed. Partner pending...");
             markAsDoneButtonText.setValue("RETRACT COMPLETION");
         }
-        if (model.getViewFellowshipInfo().partnerCompleted == 1) {
+        if (model.getViewFellowshipInfo().getPartnerCompleted() == 1) {
             completionStatus.setValue("Partner has marked the Fellowship as completed. Response pending...");
             markAsDoneButtonText.setValue("MARK FELLOWSHIP AS COMPLETED");
         }
     }
 
     private void setMarkAsDonePropertiesForPartner() {
-        if (model.getViewFellowshipInfo().partnerCompleted == 1) {
+        if (model.getViewFellowshipInfo().getPartnerCompleted() == 1) {
             completionStatus.setValue("You have marked the Fellowship as completed. Partner pending...");
             markAsDoneButtonText.setValue("RETRACT COMPLETION");
         }
-        if (model.getViewFellowshipInfo().ownerCompleted == 1) {
+        if (model.getViewFellowshipInfo().getOwnerCompleted() == 1) {
             completionStatus.setValue("Partner has marked the Fellowship as completed. Response pending...");
             markAsDoneButtonText.setValue("MARK FELLOWSHIP AS COMPLETED");
         }
@@ -183,7 +183,7 @@ public class FellowshipViewModel extends AndroidViewModel {
         FirebaseStorage storage = FirebaseStorage.getInstance("gs://fellowshippers-aec83.appspot.com/");
         StorageReference storageRef = storage.getReference();
 
-        StorageReference receiptsRef = storageRef.child("receipts/" + model.getViewFellowshipInfo().id);
+        StorageReference receiptsRef = storageRef.child("receipts/" + model.getViewFellowshipInfo().getId());
 
         File localFile = File.createTempFile("receipt", "pdf");
 
@@ -214,7 +214,7 @@ public class FellowshipViewModel extends AndroidViewModel {
     private void setReceiptPropertiesForPartner() {
         receiptButtonText.setValue("DOWNLOAD RECEIPT (.pdf)");
         // We check if a receipt has been uploaded
-        if (model.getViewFellowshipInfo().receiptUrl.equals("null")) {
+        if (model.getViewFellowshipInfo().getReceiptUrl().equals("null")) {
             receiptStatus.setValue("No receipt added.");
             receiptButtonEnabled.setValue(false);
         } else {
@@ -226,7 +226,7 @@ public class FellowshipViewModel extends AndroidViewModel {
     private void setReceiptPropertiesForOwner() {
         receiptButtonText.setValue("UPLOAD RECEIPT (.pdf)");
         // We check if a receipt has been uploaded
-        if (model.getViewFellowshipInfo().receiptUrl.equals("null")) {
+        if (model.getViewFellowshipInfo().getReceiptUrl().equals("null")) {
             receiptStatus.setValue("No receipt added.");
             receiptButtonEnabled.setValue(true);
         } else {
@@ -238,9 +238,9 @@ public class FellowshipViewModel extends AndroidViewModel {
 
     private void setPartnerInfo() {
         // We get the partner of the fellowship
-        String partnerId = model.getViewFellowshipInfo().creatorId;
+        String partnerId = model.getViewFellowshipInfo().getCreatorId();
         if (ownerOfFellowship) {
-            partnerId = model.getViewFellowshipInfo().partnerId;
+            partnerId = model.getViewFellowshipInfo().getPartnerId();
         }
         // We get their displayName and avatar URL
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
@@ -275,9 +275,9 @@ public class FellowshipViewModel extends AndroidViewModel {
 
     // This method sets the properties that are the same regardless of whether the user is the owner or not
     private void setFirmProperties() {
-        webShop.setValue(model.getViewFellowshipInfo().webshop);
-        minimumAmount.setValue(model.getViewFellowshipInfo().amountNeeded + " DKK");
-        paymentMethod.setValue(model.getViewFellowshipInfo().paymentMethod);
+        webShop.setValue(model.getViewFellowshipInfo().getWebshop());
+        minimumAmount.setValue(model.getViewFellowshipInfo().getAmountNeeded() + " DKK");
+        paymentMethod.setValue(model.getViewFellowshipInfo().getPaymentMethod());
     }
 
     // This method handles the the payment area
@@ -296,10 +296,10 @@ public class FellowshipViewModel extends AndroidViewModel {
         paymentStatusButtonText.setValue("CLICK HERE IF YOU HAVE PAID");
 
         paymentStatusHeaderText.setValue("Your payment status:");
-        if (model.getViewFellowshipInfo().partnerPaid == 1) {
+        if (model.getViewFellowshipInfo().getPartnerPaid() == 1) {
             paymentStatusButtonText.setValue("RETRACT PAYMENT CLAIM");
             paymentStatus.setValue("Paid. Pending approval...");
-            if (model.getViewFellowshipInfo().paymentApproved == 1) {
+            if (model.getViewFellowshipInfo().getPaymentApproved() == 1) {
                 paymentStatus.setValue("Payment approved by partner.");
                 paymentStatusButtonEnabled.setValue(false);
             }
@@ -314,10 +314,10 @@ public class FellowshipViewModel extends AndroidViewModel {
         paymentStatusButtonText.setValue("APPROVE PARTNER'S PAYMENT");
 
         paymentStatusHeaderText.setValue("Partner payment status:");
-        if (model.getViewFellowshipInfo().partnerPaid == 1) {
+        if (model.getViewFellowshipInfo().getPartnerPaid() == 1) {
             paymentStatus.setValue("Paid. Please approve if received...");
             paymentStatusButtonEnabled.setValue(true);
-            if (model.getViewFellowshipInfo().paymentApproved == 1) {
+            if (model.getViewFellowshipInfo().getPaymentApproved() == 1) {
                 paymentStatus.setValue("Payment approved.");
                 paymentStatusButtonEnabled.setValue(false);
             }
@@ -458,7 +458,7 @@ public class FellowshipViewModel extends AndroidViewModel {
 
 
     public boolean isOwnProfile() {
-        if (model.getViewProfileOf().id.equals(model.getCurrentUserData().getValue().getUid())) {
+        if (model.getViewProfileOf().getId().equals(model.getCurrentUserData().getValue().getUid())) {
             return true;
         } else {
             return false;

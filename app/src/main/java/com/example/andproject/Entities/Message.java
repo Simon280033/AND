@@ -6,14 +6,14 @@ import java.util.Date;
 
 public class Message {
 
-    public String fellowshipId;
-    public String senderId;
-    public String senderName;
-    public String senderImageUrl;
-    public String receiverId;
-    public String receiverName;
-    public String messageText;
-    public long messageTime;
+    private String fellowshipId;
+    private String senderId;
+    private String senderName;
+    private String senderImageUrl;
+    private String receiverId;
+    private String receiverName;
+    private String messageText;
+    private long messageTime;
 
     public Message(String fellowshipId, String senderId, String senderName, String senderImageUrl, String receiverId, String receiverName, String messageText) {
         this.fellowshipId = fellowshipId;
@@ -25,6 +25,66 @@ public class Message {
         this.messageText = messageText;
 
         this.messageTime = new Date().getTime();
+    }
+
+    public String getFellowshipId() {
+        return fellowshipId;
+    }
+
+    public void setFellowshipId(String fellowshipId) {
+        this.fellowshipId = fellowshipId;
+    }
+
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+
+    public String getSenderImageUrl() {
+        return senderImageUrl;
+    }
+
+    public void setSenderImageUrl(String senderImageUrl) {
+        this.senderImageUrl = senderImageUrl;
+    }
+
+    public String getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(String receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public String getReceiverName() {
+        return receiverName;
+    }
+
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
+    }
+
+    public String getMessageText() {
+        return messageText;
+    }
+
+    public void setMessageText(String messageText) {
+        this.messageText = messageText;
+    }
+
+    public long getMessageTime() {
+        return messageTime;
     }
 
     public void setMessageTime(long time) {

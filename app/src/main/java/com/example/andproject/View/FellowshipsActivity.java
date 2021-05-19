@@ -80,7 +80,7 @@ public class FellowshipsActivity extends AppCompatActivity {
                 // We set the ID of the fellowship we want to view in the model
                 viewModel.setViewFellowshipInfo(viewModel.getOwnFellowshipAt(position));
                 // We check if a partner has already been accepted
-                if (!viewModel.getOwnFellowshipAt(position).partnerId.equals("null")) {
+                if (!viewModel.getOwnFellowshipAt(position).getPartnerId().equals("null")) {
                     // We go to the view page for the fellowship...
                     goToFellowship();
                 } else {

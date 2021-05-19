@@ -50,7 +50,7 @@ public class ProfileViewViewModel extends AndroidViewModel {
         System.out.println("læs: refreshing comments");
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-        Query query = myRef.child("profileComments").orderByChild("receiverId").equalTo(model.getViewProfileOf().id);
+        Query query = myRef.child("profileComments").orderByChild("receiverId").equalTo(model.getViewProfileOf().getId());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -108,9 +108,9 @@ public class ProfileViewViewModel extends AndroidViewModel {
     }
 
     public void report(String message) {
-        Report report = new Report(model.getViewProfileOf().id, model.getCurrentUserData().getValue().getUid(), message);
+        Report report = new Report(model.getViewProfileOf().getId(), model.getCurrentUserData().getValue().getUid(), message);
         FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/")
-                .getReference().child("reports").child(model.getViewProfileOf().id)
+                .getReference().child("reports").child(model.getViewProfileOf().getId())
                 .push()
                 .setValue(report);
     }
@@ -118,7 +118,7 @@ public class ProfileViewViewModel extends AndroidViewModel {
     public void updateDisplayNameAndAvatarUrl()  {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-        Query ownerQuery = myRef.child("users").orderByChild("id").equalTo(model.getViewProfileOf().id);
+        Query ownerQuery = myRef.child("users").orderByChild("id").equalTo(model.getViewProfileOf().getId());
         ownerQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -150,7 +150,7 @@ public class ProfileViewViewModel extends AndroidViewModel {
     public void updateShipsCounter()  {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-        Query ownerQuery = myRef.child("completedCounter").orderByChild("userId").equalTo(model.getViewProfileOf().id);
+        Query ownerQuery = myRef.child("completedCounter").orderByChild("userId").equalTo(model.getViewProfileOf().getId());
         ownerQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -177,7 +177,7 @@ public class ProfileViewViewModel extends AndroidViewModel {
 
 
     public boolean isOwnProfile() {
-        if (model.getViewProfileOf().id.equals(model.getCurrentUserData().getValue().getUid())) {
+        if (model.getViewProfileOf().getId().equals(model.getCurrentUserData().getValue().getUid())) {
             return true;
         } else {
             return false;

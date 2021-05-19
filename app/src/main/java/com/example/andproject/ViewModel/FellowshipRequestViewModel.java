@@ -91,7 +91,7 @@ public class FellowshipRequestViewModel extends AndroidViewModel {
         System.out.println("læs: getting");
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-        Query query = myRef.child("fellowshipRequests").orderByChild("fellowshipId").equalTo(model.getViewFellowshipInfo().id);
+        Query query = myRef.child("fellowshipRequests").orderByChild("fellowshipId").equalTo(model.getViewFellowshipInfo().getId());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -102,7 +102,7 @@ public class FellowshipRequestViewModel extends AndroidViewModel {
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
                         String requestId = ((HashMap<String, String>) issue.getValue()).get("requestId");
                         String requesterId = ((HashMap<String, String>) issue.getValue()).get("requesterId");
-                        String requesterName = users.get(requesterId).displayName;
+                        String requesterName = users.get(requesterId).getDisplayName();
 
                         listItems.add(requesterName);
                         userIds.add(requesterId);
@@ -122,9 +122,9 @@ public class FellowshipRequestViewModel extends AndroidViewModel {
 
     public void acceptRequestFromUser(User user) {
         // We mark the request as accepted
-        String requestId = requestIdByUserId.get(user.id);
+        String requestId = requestIdByUserId.get(user.getId());
 
-        model.getViewFellowshipInfo().partnerId = user.id;
+        model.getViewFellowshipInfo().setPartnerId(user.getId());
 
         // We set it in the database
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
@@ -132,7 +132,7 @@ public class FellowshipRequestViewModel extends AndroidViewModel {
         myRef.child("fellowshipRequests").child(requestId).child("isAccepted").setValue(1);
 
         // We set the partner ID in the Fellowship table
-        myRef.child("fellowships").child(model.getViewFellowshipInfo().id).child("partnerId").setValue(user.id);
+        myRef.child("fellowships").child(model.getViewFellowshipInfo().getId()).child("partnerId").setValue(user.getId());
     }
 
     public Fellowship getViewFellowshipInfo() {

@@ -157,7 +157,7 @@ public class FindFellowshipsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // We set the ID of the fellowship we want to view in the model
-                System.out.println("læs: " + viewModel.getFellowshipAt(position).amountNeeded);
+                System.out.println("læs: " + viewModel.getFellowshipAt(position).getAmountNeeded());
                 viewModel.setViewFellowshipInfo(viewModel.getFellowshipAt(position));
                 goToFellowship();
             }

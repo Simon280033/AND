@@ -85,12 +85,12 @@ public class FellowshipItemAdapter extends ArrayAdapter<Pair<Fellowship, String>
                 holder = (ViewHolder) vi.getTag();
             }
 
-            holder.webShopItemText.setText(fellowshipList.get(position).first.webshop);
-            holder.categoryItemText.setText(fellowshipList.get(position).first.category);
-            holder.paymentMethodItemText.setText(fellowshipList.get(position).first.paymentMethod);
-            holder.daysLeftItemText.setText(calculateDaysLeft(fellowshipList.get(position).first.deadline));
-            holder.distanceItemText.setText(distanceBetween(fellowshipList.get(position).second, fellowshipList.get(position).first.pickupCoordinates));
-            holder.amountItemText.setText(fellowshipList.get(position).first.amountNeeded + " DKK");
+            holder.webShopItemText.setText(fellowshipList.get(position).first.getWebshop());
+            holder.categoryItemText.setText(fellowshipList.get(position).first.getCategory());
+            holder.paymentMethodItemText.setText(fellowshipList.get(position).first.getPaymentMethod());
+            holder.daysLeftItemText.setText(calculateDaysLeft(fellowshipList.get(position).first.getDeadline()));
+            holder.distanceItemText.setText(distanceBetween(fellowshipList.get(position).second, fellowshipList.get(position).first.getPickupCoordinates()));
+            holder.amountItemText.setText(fellowshipList.get(position).first.getAmountNeeded() + " DKK");
 
         } catch (Exception e) {
 

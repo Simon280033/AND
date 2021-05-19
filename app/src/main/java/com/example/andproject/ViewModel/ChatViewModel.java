@@ -42,17 +42,17 @@ public class ChatViewModel extends AndroidViewModel {
     }
 
     public void sendMessage(String messageText) {
-        String fellowshipId = model.getViewFellowshipInfo().id;
+        String fellowshipId = model.getViewFellowshipInfo().getId();
 
         String senderId = model.getCurrentUserData().getValue().getUid();
 
-        String senderName = model.getThisUser().displayName; // We get this from here, as the user could have changed it from the autheticator
+        String senderName = model.getThisUser().getDisplayName(); // We get this from here, as the user could have changed it from the autheticator
 
-        String senderImageUrl = model.getThisUser().imageUrl;
+        String senderImageUrl = model.getThisUser().getImageUrl();
 
-        String receiverId = model.getChatReceiver().id;
+        String receiverId = model.getChatReceiver().getId();
 
-        String receiverName = model.getChatReceiver().displayName;
+        String receiverName = model.getChatReceiver().getDisplayName();
 
 
         Message message = new Message(fellowshipId, senderId, senderName, senderImageUrl, receiverId, receiverName, messageText);
@@ -68,7 +68,7 @@ public class ChatViewModel extends AndroidViewModel {
     public void displayChatMessages() {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-        Query ownerQuery = myRef.child("messages").orderByChild(model.getViewFellowshipInfo().id);
+        Query ownerQuery = myRef.child("messages").orderByChild(model.getViewFellowshipInfo().getId());
 
         ownerQuery.addChildEventListener(new ChildEventListener() {
             @Override
@@ -78,7 +78,7 @@ public class ChatViewModel extends AndroidViewModel {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
                         String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("fellowshipId");
-                        if (fellowshipId.equals(model.getViewFellowshipInfo().id)) {
+                        if (fellowshipId.equals(model.getViewFellowshipInfo().getId())) {
                             String senderId = ((HashMap<String, String>) issue.getValue()).get("senderId");
                             String senderName = ((HashMap<String, String>) issue.getValue()).get("senderName");
                             String senderImageUrl = ((HashMap<String, String>) issue.getValue()).get("senderImageUrl");;
@@ -91,7 +91,7 @@ public class ChatViewModel extends AndroidViewModel {
 
                             Message message = new Message(fellowshipId, senderId, senderName, senderImageUrl, receiverId, receiverName, messageText);
 
-                            System.out.println("læs: " + message.messageText);
+                            System.out.println("læs: " + message.getMessageText());
 
                             ms.add(message);
                         }
@@ -110,7 +110,7 @@ public class ChatViewModel extends AndroidViewModel {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
                         String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("fellowshipId");
-                        if (fellowshipId.equals(model.getViewFellowshipInfo().id)) {
+                        if (fellowshipId.equals(model.getViewFellowshipInfo().getId())) {
                             String senderId = ((HashMap<String, String>) issue.getValue()).get("senderId");
                             String senderName = ((HashMap<String, String>) issue.getValue()).get("senderName");
                             String senderImageUrl = ((HashMap<String, String>) issue.getValue()).get("senderImageUrl");;
@@ -123,7 +123,7 @@ public class ChatViewModel extends AndroidViewModel {
 
                             Message message = new Message(fellowshipId, senderId, senderName, senderImageUrl, receiverId, receiverName, messageText);
 
-                            System.out.println("læs: " + message.messageText);
+                            System.out.println("læs: " + message.getMessageText());
 
                             ms.add(message);
                         }

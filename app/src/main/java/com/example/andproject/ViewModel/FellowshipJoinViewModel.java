@@ -91,7 +91,7 @@ public class FellowshipJoinViewModel extends AndroidViewModel {
 
     public void refreshOwnerDetails()  {
         // We get the owner of the fellowship
-        String ownerId = model.getViewFellowshipInfo().creatorId;
+        String ownerId = model.getViewFellowshipInfo().getCreatorId();
         // We get their displayName and avatar URL
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
@@ -119,14 +119,14 @@ public class FellowshipJoinViewModel extends AndroidViewModel {
 
     private void refreshFellowshipDetails() {
         // We get the fellowship details
-        Fellowship fs = model.getFellowshipById(model.getViewFellowshipInfo().id);
+        Fellowship fs = model.getFellowshipById(model.getViewFellowshipInfo().getId());
 
-        webshop.setValue(fs.webshop);
-        amountNeeded.setValue(fs.amountNeeded + " DKK");
-        paymentMethod.setValue(fs.paymentMethod);
-        deadline.setValue(fs.deadline);
+        webshop.setValue(fs.getWebshop());
+        amountNeeded.setValue(fs.getAmountNeeded() + " DKK");
+        paymentMethod.setValue(fs.getPaymentMethod());
+        deadline.setValue(fs.getDeadline());
         // FIND A WAY TO CALCULATE DISTANCE BETWEEN TWO LATLONG POINTS!!!
-        distance.setValue(distanceBetween(model.getUserLocation(), fs.pickupCoordinates));
+        distance.setValue(distanceBetween(model.getUserLocation(), fs.getPickupCoordinates()));
     }
 
     public void refreshDetails() {
@@ -137,7 +137,7 @@ public class FellowshipJoinViewModel extends AndroidViewModel {
     public void requestJoin() {
         // We create the Fellowship request object
         String requestId = UUID.randomUUID().toString(); // We create a random ID;
-        String fellowshipId = model.getViewFellowshipInfo().id;
+        String fellowshipId = model.getViewFellowshipInfo().getId();
         String requesterId = model.getCurrentUserData().getValue().getUid();
         String requestDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         int isAccepted = 0;

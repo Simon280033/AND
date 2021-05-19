@@ -80,7 +80,7 @@ public class FellowshipRequestsActivity extends AppCompatActivity {
 
         alertDialog.setTitle("Request options");
 
-        alertDialog.setMessage("Actions for Fellowship request by '" + user.displayName + "':");
+        alertDialog.setMessage("Actions for Fellowship request by '" + user.getDisplayName() + "':");
 
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Accept request", new DialogInterface.OnClickListener() {
 

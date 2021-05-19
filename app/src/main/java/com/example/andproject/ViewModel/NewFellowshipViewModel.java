@@ -107,7 +107,7 @@ public class NewFellowshipViewModel extends AndroidViewModel {
 
     public void createNewFellowShip(Fellowship fs) {
         // We save it to the database
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(fs.id);
+        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("fellowships").child(fs.getId());
 
         myRef.setValue(fs);
     }
