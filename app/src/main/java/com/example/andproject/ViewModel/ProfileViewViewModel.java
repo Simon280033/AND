@@ -6,7 +6,9 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.Entities.Message;
+import com.example.andproject.Entities.ProfileComment;
 import com.example.andproject.Entities.Report;
 import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
@@ -28,6 +30,10 @@ public class ProfileViewViewModel extends AndroidViewModel {
     private MutableLiveData<String> displayName;
     private MutableLiveData<String> avatarUrl;
     private MutableLiveData<String> shipsCounter;
+    private MutableLiveData<ArrayList<ProfileComment>> profileCommentList;
+
+    // Lists holding the full data of the fellowships
+    private ArrayList<ProfileComment> profileComments;
 
     public ProfileViewViewModel(Application app){
         super(app);
@@ -37,6 +43,54 @@ public class ProfileViewViewModel extends AndroidViewModel {
     public void refreshUserDetails() {
         updateDisplayNameAndAvatarUrl();
         updateShipsCounter();
+        refreshProfileComments();
+    }
+
+    private void refreshProfileComments() {
+        System.out.println("læs: refreshing comments");
+        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+
+        Query query = myRef.child("profileComments").orderByChild("receiverId").equalTo(model.getViewProfileOf().id);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                System.out.println("læs: got here");
+                if (dataSnapshot.exists()) {
+                    System.out.println("læs: got here2");
+                    //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
+                    ArrayList<ProfileComment> listItems=new ArrayList<ProfileComment>();
+                    // dataSnapshot is the "issue" node with all children with id 0
+                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
+                        String messageText = ((HashMap<String, String>) issue.getValue()).get("messageText");
+                        String receiverId = ((HashMap<String, String>) issue.getValue()).get("receiverId");
+                        String senderId = ((HashMap<String, String>) issue.getValue()).get("senderId");
+                        String senderName = ((HashMap<String, String>) issue.getValue()).get("senderName");
+                        String senderImageUrl = ((HashMap<String, String>) issue.getValue()).get("senderImageUrl");
+                        Long messageTime = ((HashMap<String, Long>) issue.getValue()).get("messageTime");
+
+                        ProfileComment pc = new ProfileComment(senderId, senderName, senderImageUrl, receiverId, messageText, messageTime);
+
+                        profileComments.add(pc);
+                        listItems.add(pc);
+                    }
+                    System.out.println("læs: " + listItems.size());
+                    profileCommentList.setValue(listItems);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public MutableLiveData<ArrayList<ProfileComment>> getProfileCommentList() {
+        if (profileCommentList == null) {
+            profileCommentList = new MutableLiveData<ArrayList<ProfileComment>>();
+            profileComments = new ArrayList<>();
+        }
+        return profileCommentList;
     }
 
     public MutableLiveData<String> getDisplayName() {

@@ -67,20 +67,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shipsCounterHeader" />
 
-    <ScrollView
+    <ListView
         android:id="@+id/ratingsScrollView"
-        android:layout_width="416dp"
+        android:layout_width="match_parent"
         android:layout_height="114dp"
         android:layout_marginTop="50dp"
+        android:layout_weight="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shipsCounterTextView">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+    </ListView>
 
     <Button
         android:id="@+id/profileActionButton"
@@ -94,17 +90,17 @@
         android:backgroundTint="#36c940"
         android:textColor="@color/white"/>
 
-    <TextView
-        android:id="@+id/ratingsHeaderTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="22dp"
-        android:layout_marginBottom="5dp"
-        android:text="Ratings:"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/ratingsScrollView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/ratingsHeaderTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="Reviews:"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/ratingsScrollView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/cancelButton"
@@ -130,5 +126,6 @@
             android:text="Report"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

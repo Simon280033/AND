@@ -17,12 +17,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.andproject.Entities.Fellowship;
+import com.example.andproject.Entities.JoinedFellowshipItemAdapter;
+import com.example.andproject.Entities.ProfileComment;
+import com.example.andproject.Entities.ProfileCommentItemAdapter;
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.ProfileViewViewModel;
@@ -47,7 +52,7 @@ public class ProfileViewActivity extends AppCompatActivity {
 
     private TextView nameTextView, shipsCounterTextView;
     private ImageView imageView;
-    private ScrollView ratingsScrollView;
+    private ListView ratingsScrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +171,18 @@ public class ProfileViewActivity extends AppCompatActivity {
 
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
         viewModel.getShipsCounter().observe(this, shipsCounterObserver);
+
+        // We bind the listview for the profile comments
+        final Observer<ArrayList<ProfileComment>> profileCommentObserver = new Observer<ArrayList<ProfileComment>>() {
+            @Override
+            public void onChanged(@Nullable final ArrayList<ProfileComment> newValue) {
+                ProfileCommentItemAdapter madb = new ProfileCommentItemAdapter(ProfileViewActivity.this, 0, newValue);
+                ratingsScrollView.setAdapter(madb);
+            }
+        };
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getProfileCommentList().observe(this, profileCommentObserver);
     }
 
     private void setButtonAccordingToProfile() {

@@ -27,9 +27,6 @@ public class FellowshipRequestViewModel extends AndroidViewModel {
 
     private MutableLiveData<ArrayList<String>> requestsOverviewList;
 
-    // Lists holding the full data of the fellowships
-    private ArrayList<Fellowship> fellowshipList;
-
     private ArrayList<String> userIds;
     private HashMap<String, User> users;
     private HashMap<String, String> requestIdByUserId;
@@ -50,7 +47,6 @@ public class FellowshipRequestViewModel extends AndroidViewModel {
     public MutableLiveData<ArrayList<String>> getRequestsOverviewList() {
         if (requestsOverviewList == null) {
             requestsOverviewList = new MutableLiveData<ArrayList<String>>();
-            fellowshipList = new ArrayList<>();
         }
         return requestsOverviewList;
     }

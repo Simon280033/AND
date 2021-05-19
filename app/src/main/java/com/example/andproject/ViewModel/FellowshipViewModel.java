@@ -11,6 +11,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.bumptech.glide.Glide;
 import com.example.andproject.Entities.Fellowship;
+import com.example.andproject.Entities.ProfileComment;
+import com.example.andproject.Entities.Report;
 import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
 import com.example.andproject.View.FellowshipActivity;
@@ -80,6 +82,18 @@ public class FellowshipViewModel extends AndroidViewModel {
 
     public void setViewProfileOf() {
         model.setViewProfileOf(model.getFellowshipPartner());
+    }
+
+    public void submitComment(String message) {
+        String senderId = model.getCurrentUserData().getValue().getUid();
+        String senderName = model.getThisUser().displayName;
+        String senderImageUrl = model.getThisUser().imageUrl;
+        String receiverId = model.getFellowshipPartner().id;
+
+        ProfileComment pc = new ProfileComment(senderId, senderName, senderImageUrl, receiverId, message);
+        FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/")
+                .getReference().child("profileComments").child(model.getFellowshipPartner().id)
+                .setValue(pc);
     }
 
 

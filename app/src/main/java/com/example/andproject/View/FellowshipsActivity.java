@@ -101,7 +101,7 @@ public class FellowshipsActivity extends AppCompatActivity {
 
     // This method binds the View's UI elements to the properties in the viewmodel
     private void bindUiElements() {
-        // We bind the spinner for our own Fellowships
+        // We bind the listview for our own Fellowships
         final Observer<ArrayList<Fellowship>> ownFellowshipsObserver = new Observer<ArrayList<Fellowship>>() {
             @Override
             public void onChanged(@Nullable final ArrayList<Fellowship> newValue) {
@@ -114,7 +114,7 @@ public class FellowshipsActivity extends AppCompatActivity {
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
         viewModel.getYourFellowshipsList().observe(this, ownFellowshipsObserver);
 
-        // We bind the spinner for our joined Fellowships
+        // We bind the listview for our joined Fellowships
         final Observer<ArrayList<Fellowship>> joinedFellowshipsObserver = new Observer<ArrayList<Fellowship>>() {
             @Override
             public void onChanged(@Nullable final ArrayList<Fellowship> newValue) {
