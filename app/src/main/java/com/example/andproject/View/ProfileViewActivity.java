@@ -2,19 +2,24 @@ package com.example.andproject.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -38,11 +43,9 @@ public class ProfileViewActivity extends AppCompatActivity {
 
     private ProfileViewViewModel viewModel;
 
-    private Button profileActionButton;
-    private Button cancelButton;
+    private Button profileActionButton, cancelButton, reportButton;
 
-    private TextView nameTextView;
-    private TextView shipsCounterTextView;
+    private TextView nameTextView, shipsCounterTextView;
     private ImageView imageView;
     private ScrollView ratingsScrollView;
 
@@ -64,6 +67,35 @@ public class ProfileViewActivity extends AppCompatActivity {
         setUi();
     }
 
+    private void reportDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Report abuse");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("Report", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                viewModel.report(input.getText().toString());
+                Toast.makeText(ProfileViewActivity.this, "User reported! An admin will review your ticket.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
     private void setButtonMethods() {
         cancelButton.setOnClickListener((View v) -> {
             onBackPressed();
@@ -72,12 +104,16 @@ public class ProfileViewActivity extends AppCompatActivity {
         profileActionButton.setOnClickListener((View v) -> {
             goToProfileEdit();
         });
+
+        reportButton.setOnClickListener((View v) -> {
+            reportDialog();
+        });
     }
 
     private void findViews() {
         profileActionButton = findViewById(R.id.profileActionButton);
         cancelButton = findViewById(R.id.cancelButton);
-
+        reportButton = findViewById(R.id.reportButton);
         nameTextView = findViewById(R.id.nameTextView);
         shipsCounterTextView = findViewById(R.id.shipsCounterTextView);
         imageView = findViewById(R.id.imageView);
@@ -89,7 +125,7 @@ public class ProfileViewActivity extends AppCompatActivity {
         bindUiElements();
         // We refresh them
         viewModel.refreshUserDetails();
-        // We make the edit button visible if it is our own profile
+        // We make the edit/report buttons visible if it is our own profile
         setButtonAccordingToProfile();
     }
 
@@ -136,6 +172,8 @@ public class ProfileViewActivity extends AppCompatActivity {
         // We figure out whether or not this is our own profile
         if (!viewModel.isOwnProfile()) {
             profileActionButton.setVisibility(View.INVISIBLE);
+        } else {
+            reportButton.setVisibility(View.INVISIBLE);
         }
     }
 

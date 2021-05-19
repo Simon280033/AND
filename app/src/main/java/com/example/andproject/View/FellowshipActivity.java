@@ -307,6 +307,11 @@ public class FellowshipActivity extends AppCompatActivity {
         paymentStatusButton.setOnClickListener((View v) -> {
             paymentButtonMethod();
         });
+
+        partnerAvatarView.setOnClickListener((View v) -> {
+            viewModel.setViewProfileOf();
+            goToProfileView();
+        });
     }
 
     private void findViews() {
@@ -327,6 +332,10 @@ public class FellowshipActivity extends AppCompatActivity {
 
     private void goToChat() {
         startActivity(new Intent(this, ChatActivity.class));
+    }
+
+    private void goToProfileView() {
+        startActivity(new Intent(this, ProfileViewActivity.class));
     }
 
     private void paymentButtonMethod() {

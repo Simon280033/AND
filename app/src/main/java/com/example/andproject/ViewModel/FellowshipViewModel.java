@@ -78,6 +78,11 @@ public class FellowshipViewModel extends AndroidViewModel {
         model.setChatReceiver(model.getFellowshipPartner());
     }
 
+    public void setViewProfileOf() {
+        model.setViewProfileOf(model.getFellowshipPartner());
+    }
+
+
     public void setProperties() {
         setPartnerInfo();
         setFirmProperties();

@@ -6,6 +6,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.andproject.Entities.Message;
+import com.example.andproject.Entities.Report;
 import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,6 +51,14 @@ public class ProfileViewViewModel extends AndroidViewModel {
             avatarUrl = new MutableLiveData<String>();
         }
         return avatarUrl;
+    }
+
+    public void report(String message) {
+        Report report = new Report(model.getViewProfileOf().id, model.getCurrentUserData().getValue().getUid(), message);
+        FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/")
+                .getReference().child("reports").child(model.getViewProfileOf().id)
+                .push()
+                .setValue(report);
     }
 
     public void updateDisplayNameAndAvatarUrl()  {
