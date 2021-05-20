@@ -191,14 +191,13 @@ public class FellowshipViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                 // Local temp file has been created
-                // Listen for string change and toast when it happens!
-                //Toast.makeText(FellowshipActivity.this, "Succesfully download receipt as .PDF! Please check your downloads.", Toast.LENGTH_SHORT).show();
+                downloadSuccessful.setValue(true);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle any errors
-                //Toast.makeText(FellowshipActivity.this, "ERROR: Failed to download receipt! Please try again.", Toast.LENGTH_SHORT).show();
+                downloadSuccessful.setValue(false);
             }
         });
     }

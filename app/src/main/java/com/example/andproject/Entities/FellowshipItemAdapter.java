@@ -86,11 +86,12 @@ public class FellowshipItemAdapter extends ArrayAdapter<Pair<Fellowship, String>
                 holder = (ViewHolder) vi.getTag();
             }
 
+            System.out.println("PLEASE" + fellowshipList.get(position).second + "please");
             holder.webShopItemText.setText(fellowshipList.get(position).first.getWebshop());
             holder.categoryItemText.setText(fellowshipList.get(position).first.getCategory());
             holder.paymentMethodItemText.setText(fellowshipList.get(position).first.getPaymentMethod());
-            holder.daysLeftItemText.setText(calculateDaysLeft(fellowshipList.get(position).first.getDeadline()));
-            holder.distanceItemText.setText(distanceBetween(fellowshipList.get(position).second, fellowshipList.get(position).first.getPickupCoordinates()));
+            holder.daysLeftItemText.setText(DayDifferenceCalculator.calculateDaysLeft(fellowshipList.get(position).first.getDeadline()));
+            holder.distanceItemText.setText(DistanceCalculator.distanceBetween(fellowshipList.get(position).second, fellowshipList.get(position).first.getPickupCoordinates()));
             holder.amountItemText.setText(fellowshipList.get(position).first.getAmountNeeded() + " DKK");
 
         } catch (Exception e) {
@@ -98,59 +99,5 @@ public class FellowshipItemAdapter extends ArrayAdapter<Pair<Fellowship, String>
 
         }
         return vi;
-    }
-
-    private String calculateDaysLeft(String deadline) throws ParseException {
-        Calendar cal1 = new GregorianCalendar();
-        Calendar cal2 = new GregorianCalendar();
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-        Date date = new Date(); // Today
-        cal1.setTime(date);
-        date = sdf.parse(deadline);
-        cal2.setTime(date);
-
-        return "" + daysBetween(cal1.getTime(),cal2.getTime());
-    }
-
-    private int daysBetween(Date d1, Date d2){
-        System.out.println("læs: days: " + (int)( (d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)));
-        return (int)( (d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
-    }
-
-    private String distanceBetween(String usersLocation, String pickupLocation) {
-        // We convert the strings into doubles
-        double lat1, lng1, lat2, lng2;
-
-        String[] parts = usersLocation.split(", ");
-        System.out.println(parts[0] + "-" + parts[1]);
-        lat1 = Double.parseDouble(parts[0]);
-        lng1 = Double.parseDouble(parts[1]);
-
-        parts = pickupLocation.split(", ");
-        System.out.println(parts[0] + "-" + parts[1]);
-        lat2 = Double.parseDouble(parts[0]);
-        lng2 = Double.parseDouble(parts[1]);
-
-        //returns distance in meters
-            double a = (lat1 - lat2) * distPerLat(lat1);
-            double b = (lng1 - lng2) * distPerLng(lng1);
-
-            return String.format("%.2f", (Math.sqrt(a * a + b * b))) + " meters";
-    }
-
-    private static double distPerLng(double lng){
-        return 0.0003121092*Math.pow(lng, 4)
-                +0.0101182384*Math.pow(lng, 3)
-                -17.2385140059*lng*lng
-                +5.5485277537*lng+111301.967182595;
-    }
-
-    private static double distPerLat(double lat){
-        return -0.000000487305676*Math.pow(lat, 4)
-                -0.0033668574*Math.pow(lat, 3)
-                +0.4601181791*lat*lat
-                -1.4558127346*lat+110579.25662316;
     }
 }

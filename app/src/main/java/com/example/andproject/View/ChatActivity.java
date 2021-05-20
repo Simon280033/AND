@@ -62,6 +62,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void findViews() {
         sendButton = findViewById(R.id.sendButton);
+        sendButton.setImageDrawable(getDrawable(R.drawable.sendmessage));
         messageInput = findViewById(R.id.messageInput);
         messageList = findViewById(R.id.messageList);
     }

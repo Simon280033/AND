@@ -77,6 +77,10 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
     private boolean criteriasMet(Fellowship fs) {
         boolean met = true;
 
+        if(!fs.getPartnerId().equals("null")) {
+            met = false;
+        }
+
         if(!this.webShop.equals("Any")) {
             if (!fs.getWebshop().equals(this.webShop)) {
                 met = false;
@@ -180,6 +184,7 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    fellowshipsDetails.clear();
                     ArrayList<String> tempWs=new ArrayList<>();
                     tempWs.add("Any");
                     ArrayList<String> tempCg=new ArrayList<>();
@@ -221,7 +226,7 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
                                 tempCg.add(category);
                             }
                             try {
-                                // We filter out those that are either the user's own, or where the deadline has passed
+                                // We filter out those that are either the user's own, already joined, or where the deadline has passed
                                 if (!pendingsRequestsFellowships.contains(fellowshipId) && calculateDaysLeft(deadline) >= 0 && criteriasMet(fs)) {
                                     joinableFellowships.put(fellowshipId, fs);
 

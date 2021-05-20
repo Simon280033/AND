@@ -52,18 +52,21 @@ public class ProfileEditorViewModel extends AndroidViewModel {
     }
 
     private void setUserDetails(User user)  {
+        displayName.setValue(user.getDisplayName());
+        avatarUrl.setValue(user.getImageUrl());
+        email.setValue(user.getEmail());
     }
 
     public MutableLiveData<String> getDisplayName() {
         if (displayName == null) {
-            displayName = new MutableLiveData<String>();
+            displayName = new MutableLiveData<String>(model.getCurrentUserData().getValue().getDisplayName());
         }
         return displayName;
     }
 
     public MutableLiveData<String> getEmail() {
         if (email == null) {
-            email = new MutableLiveData<String>();
+            email = new MutableLiveData<String>(model.getCurrentUserData().getValue().getEmail());
         }
         return email;
     }
@@ -168,6 +171,9 @@ public class ProfileEditorViewModel extends AndroidViewModel {
     }
 
     public void saveUserInfo(String displayName) {
+        if (displayName == null) {
+            displayName = "FellowShipper";
+        }
         User user = new User(model.getCurrentUserData().getValue().getUid(), displayName, avatarUrl.getValue(), model.getCurrentUserData().getValue().getEmail());
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("users").child(model.getCurrentUserData().getValue().getUid());
 

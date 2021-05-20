@@ -83,7 +83,10 @@ public class SignInViewModel extends AndroidViewModel {
                         String em = ((HashMap<String, String>) issue.getValue()).get("email");
 
                         model.setThisUser(new User(id, dn, iu, em));
+                        model.setIsNewUser(false);
                     }
+                } else {
+                    model.setIsNewUser(true);
                 }
             }
 

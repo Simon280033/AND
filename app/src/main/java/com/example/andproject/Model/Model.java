@@ -33,6 +33,7 @@ public class Model {
     // Customer user data (different from default authenticator data)
     private User thisUser;
     private String userLocation;
+    private boolean isNewUser;
 
     // Profile view
     private User viewProfileOf;
@@ -61,6 +62,14 @@ public class Model {
         if(instance == null)
             instance = new Model(app);
         return instance;
+    }
+
+    public void setIsNewUser(boolean isNew) {
+        this.isNewUser = isNew;
+    }
+
+    public boolean getIsNewUser() {
+        return isNewUser;
     }
 
     public String getUserLocation() {
