@@ -58,7 +58,7 @@ Efter at have udviklet applikationen, kan det konkluderes, at de requirements de
 <br/>-NavigationDrawer NÆGTER simpelthen at virke. Jeg kan få det til at virke på andre apps hvis jeg lavet et nyt Android Studio projekt, men der er et eller andet der gør, at det ikke vil virke på denne her. Det er en skam, for det ville se fedt ud, men jeg valgte at fokusere på vigtigere ting.
 
 <b>YouTube demonstrations video:</b><br/>
-https://youtu.be/RFbyCHP37b8
+https://youtu.be/EHzyaAj0B9k
 
 <b>Ting jeg ville have gjort hvis jeg havde mere tid:</b><br/>
 -Brugt recyclerviews i stedet for listviews. Jeg kom i tanke om det på deadline dagen, og med det oventstående problem (under Issues linje 54), blev jeg enig med mig selv om ikke at pille ved noget der virkede på deadline dagen. Gør ingen forskel alligevel, så længe der ikke er mange FellowShips (hvilket der ikke er her under demonstrationen, men det ville være smart at bruge recyclerviews "i virkeligheden")
