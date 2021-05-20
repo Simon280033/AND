@@ -2,7 +2,8 @@
 Applikationsnavn: FellowShippers
 
 VIGTIGT:
-For at kunne bruge applikationen, SKAL du give den tilladelse til lokation samt storage (Den prompter dig i starten)
+-Kode er under master branch
+-For at kunne bruge applikationen, SKAL du give den tilladelse til lokation samt storage (Den prompter dig i starten)
 
 Motivation: 
 Onlinehandel oplever på nuværende tidspunkt enorm vækst, grundet COVID-19 epidemien og dens medfølgende problematikker angående traditionelle former for handel.
