@@ -1,6 +1,8 @@
 package com.example.andproject.View;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
         checkIfSignedIn();
         setContentView(R.layout.activity_main);
 
+        createLocationRequest();
+        createStorageRequest();
+
         viewProfileButton = findViewById(R.id.profileButton);
         fellowshipsButton = findViewById(R.id.fellowshipsButton);
         signOutButton = findViewById(R.id.signOutButton);
@@ -43,6 +48,18 @@ public class MainActivity extends AppCompatActivity {
         signOutButton.setOnClickListener((View v) -> {
             signOut();
         });
+    }
+
+    public void createStorageRequest() {
+        if (getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+    }
+
+    public void createLocationRequest() {
+        if (getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
     }
 
     private void checkIfSignedIn() {

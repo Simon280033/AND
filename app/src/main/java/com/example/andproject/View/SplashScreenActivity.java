@@ -3,13 +3,18 @@ package com.example.andproject.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.SplashScreenViewModel;
+import com.google.android.gms.common.api.ResolvableApiException;
+
 // This activity acts as a view for the splash screen
 public class SplashScreenActivity extends AppCompatActivity {
     private SplashScreenViewModel viewModel;

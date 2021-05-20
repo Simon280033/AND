@@ -74,7 +74,6 @@ public class ChatViewModel extends AndroidViewModel {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
                 ArrayList<Message> ms = new ArrayList<>();
-                System.out.println("læs: child added");
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
                         String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("fellowshipId");
@@ -90,8 +89,6 @@ public class ChatViewModel extends AndroidViewModel {
                             //String messageDateTime = DateFormat.format("dd-MM-yyyy (HH:mm:ss)", messageTime).toString();
 
                             Message message = new Message(fellowshipId, senderId, senderName, senderImageUrl, receiverId, receiverName, messageText);
-
-                            System.out.println("læs: " + message.getMessageText());
 
                             ms.add(message);
                         }
@@ -105,8 +102,6 @@ public class ChatViewModel extends AndroidViewModel {
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
                 ArrayList<Message> ms = new ArrayList<>();
-
-                System.out.println("læs: child changed");
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
                         String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("fellowshipId");
@@ -123,8 +118,6 @@ public class ChatViewModel extends AndroidViewModel {
 
                             Message message = new Message(fellowshipId, senderId, senderName, senderImageUrl, receiverId, receiverName, messageText);
 
-                            System.out.println("læs: " + message.getMessageText());
-
                             ms.add(message);
                         }
                     }
@@ -136,19 +129,16 @@ public class ChatViewModel extends AndroidViewModel {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                System.out.println("læs: child Removed");
 
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                System.out.println("læs: child Moved");
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                System.out.println("læs: child onCancelled");
 
             }
         });

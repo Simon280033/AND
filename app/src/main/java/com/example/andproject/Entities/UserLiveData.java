@@ -1,4 +1,4 @@
-package com.example.andproject.Mediator;
+package com.example.andproject.Entities;
 
 import androidx.lifecycle.LiveData;
 

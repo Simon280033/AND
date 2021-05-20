@@ -7,12 +7,10 @@ public class DistanceCalculator {
         double lat1, lng1, lat2, lng2;
 
         String[] parts = usersLocation.split(", ");
-        System.out.println(parts[0] + "-" + parts[1]);
         lat1 = Double.parseDouble(parts[0]);
         lng1 = Double.parseDouble(parts[1]);
 
         parts = pickupLocation.split(", ");
-        System.out.println(parts[0] + "-" + parts[1]);
         lat2 = Double.parseDouble(parts[0]);
         lng2 = Double.parseDouble(parts[1]);
 

@@ -1,13 +1,12 @@
 package com.example.andproject.Model;
 
 import android.app.Application;
-import android.net.Uri;
 
 import androidx.lifecycle.LiveData;
 
 import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.Entities.User;
-import com.example.andproject.Mediator.UserRepository;
+import com.example.andproject.Entities.UserRepository;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

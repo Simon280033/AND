@@ -12,7 +12,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.andproject.Entities.User;
-import com.example.andproject.Mediator.UserRepository;
 import com.example.andproject.Model.Model;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;

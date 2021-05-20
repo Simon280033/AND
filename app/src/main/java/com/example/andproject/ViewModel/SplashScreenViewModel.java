@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData;
 
 import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationRequest;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.logging.Handler;
@@ -20,4 +22,7 @@ public class SplashScreenViewModel extends AndroidViewModel {
         super(app);
         model = Model.getInstance(app);
     }
+
+
+
 }
