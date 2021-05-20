@@ -3,6 +3,8 @@ package com.example.andproject.Entities;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+// This class holds the info for a FellowShip.
+// On top of that, it also contains methods to update its equivalent in the Realtime database, when data is updated on the local object
 public class Fellowship {
 
     private String id;
@@ -155,6 +157,7 @@ public class Fellowship {
         this.isCompleted = isCompleted;
     }
 
+    // The following methods update the Realtime database entry
     public void setFellowshipAsCompleted() {
         this.isCompleted = 1;
 

@@ -43,7 +43,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
+// This activity acts as a view for when a user wants to view the profile of another user or themselves
 public class ProfileViewActivity extends AppCompatActivity {
 
     private ProfileViewViewModel viewModel;

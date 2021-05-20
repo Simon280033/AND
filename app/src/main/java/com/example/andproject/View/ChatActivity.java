@@ -19,6 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
+// This activity is for chatting between the two partners of a FellowShip
 public class ChatActivity extends AppCompatActivity {
     private ChatViewModel viewModel;
 

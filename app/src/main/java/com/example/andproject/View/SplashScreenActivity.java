@@ -9,15 +9,15 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.example.andproject.R;
-import com.example.andproject.ViewModel.SpashScreenViewModel;
-
+import com.example.andproject.ViewModel.SplashScreenViewModel;
+// This activity acts as a view for the splash screen
 public class SplashScreenActivity extends AppCompatActivity {
-    private SpashScreenViewModel viewModel;
+    private SplashScreenViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(SpashScreenViewModel.class);
+        viewModel = new ViewModelProvider(this).get(SplashScreenViewModel.class);
 
         setContentView(R.layout.activity_splash_screen);
 

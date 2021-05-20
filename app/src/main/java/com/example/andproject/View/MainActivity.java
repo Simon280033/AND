@@ -14,13 +14,11 @@ import androidx.navigation.ui.AppBarConfiguration;
 import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.MainActivityViewModel;
-
+// This activity acts as a view for the main menu. This is where a logged in user starts, and where they can navigate to the other views
 public class MainActivity extends AppCompatActivity {
     private MainActivityViewModel viewModel;
 
     private Button viewProfileButton, fellowshipsButton, signOutButton;
-
-    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

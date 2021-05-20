@@ -21,7 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+// This viewmodel determines what is being shown on the fellowship requests view
 public class FellowshipRequestViewModel extends AndroidViewModel {
     private final Model model;
 
@@ -63,7 +63,7 @@ public class FellowshipRequestViewModel extends AndroidViewModel {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
         Query query = myRef.child("users");
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -92,7 +92,7 @@ public class FellowshipRequestViewModel extends AndroidViewModel {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
         Query query = myRef.child("fellowshipRequests").orderByChild("fellowshipId").equalTo(model.getViewFellowshipInfo().getId());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -143,15 +143,7 @@ public class FellowshipRequestViewModel extends AndroidViewModel {
         model.setViewProfileOf(user);
     }
 
-    public void init() {
-        model.init();
-    }
-
     public LiveData<FirebaseUser> getCurrentUser(){
         return model.getCurrentUserData();
-    }
-
-    public void signOut() {
-        model.signOut();
     }
 }

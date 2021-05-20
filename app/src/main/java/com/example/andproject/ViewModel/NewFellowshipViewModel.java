@@ -26,12 +26,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-
+// This viewmodel determines what is being shown on the new fellowship view
 public class NewFellowshipViewModel extends AndroidViewModel {
     private final Model model;
 
     // Bindable attributes to be shown in UI
-    private MutableLiveData<ArrayList<String>> webShopsList;
     private MutableLiveData<ArrayList<String>> categoriesList;
     private MutableLiveData<ArrayList<String>> paymentMethodsList;
 
@@ -40,13 +39,6 @@ public class NewFellowshipViewModel extends AndroidViewModel {
     public NewFellowshipViewModel(Application app){
         super(app);
         model = Model.getInstance(app);
-    }
-
-    public MutableLiveData<ArrayList<String>> getWebShopsList() {
-        if (webShopsList == null) {
-            webShopsList = new MutableLiveData<ArrayList<String>>();
-        }
-        return webShopsList;
     }
 
     public MutableLiveData<ArrayList<String>> getCategoriesList() {
@@ -71,7 +63,6 @@ public class NewFellowshipViewModel extends AndroidViewModel {
     }
 
     public void refreshSpinnerLists() {
-        setWebshopSpinner();
         setCategorySpinner();
         setPaymentMethodSpinner();
     }
@@ -112,31 +103,6 @@ public class NewFellowshipViewModel extends AndroidViewModel {
         myRef.setValue(fs);
     }
 
-    private void setWebshopSpinner() {
-        // Spinner Drop down elements
-        ArrayList<String> webshops = new ArrayList<String>();
-
-        DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("webshops");
-
-        ValueEventListener eventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        webshops.add(ds.getKey());
-                    }
-                    webShopsList.setValue(webshops);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        myRef.addListenerForSingleValueEvent(eventListener);
-    }
-
     private void setCategorySpinner() {
         // Spinner Drop down elements
         ArrayList<String> categories = new ArrayList<String>();
@@ -165,15 +131,7 @@ public class NewFellowshipViewModel extends AndroidViewModel {
         model.setViewProfileOf(user);
     }
 
-    public void init() {
-        model.init();
-    }
-
     public LiveData<FirebaseUser> getCurrentUser(){
         return model.getCurrentUserData();
-    }
-
-    public void signOut() {
-        model.signOut();
     }
 }

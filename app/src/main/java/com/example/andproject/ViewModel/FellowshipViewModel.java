@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
+// This viewmodel determines what is being shown on the fellowship view
 public class FellowshipViewModel extends AndroidViewModel {
     private final Model model;
 
@@ -444,6 +444,7 @@ public class FellowshipViewModel extends AndroidViewModel {
         }
         return completionStatus;
     }
+
     public void incrementCompletionCounterForBothUsers(String ownerId, String partnerId) {
         model.incrementCompletionCounterForBothUsers(ownerId, partnerId);
     }
@@ -455,7 +456,6 @@ public class FellowshipViewModel extends AndroidViewModel {
     public User getViewProfileOf() {
         return model.getViewProfileOf();
     }
-
 
     public boolean isOwnProfile() {
         if (model.getViewProfileOf().getId().equals(model.getCurrentUserData().getValue().getUid())) {

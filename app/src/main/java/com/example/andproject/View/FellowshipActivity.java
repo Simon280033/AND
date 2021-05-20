@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+// This activity handles the view for the actions available on a FellowShip
 public class FellowshipActivity extends AppCompatActivity {
     private FellowshipViewModel viewModel;
 

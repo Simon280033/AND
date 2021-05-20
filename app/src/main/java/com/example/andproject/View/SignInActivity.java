@@ -1,35 +1,22 @@
 package com.example.andproject.View;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
-import com.example.andproject.Entities.User;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.SignInViewModel;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUserMetadata;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.Arrays;
 import java.util.List;
-
+// This activity acts as a view for the sign-in process
 public class SignInActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 42; // <- figure out what this is
     private SignInViewModel viewModel;
@@ -49,9 +36,11 @@ public class SignInActivity extends AppCompatActivity {
             // We check if a user was returned
             if (user != null) {
                 if (isNewUser()) {
+                    System.out.println("læs: new user");
                     goToProfileEditor();
                 } else {
-                    viewModel.setCustomerUserData();
+                    System.out.println("læs: returning user");
+                    viewModel.setCustomUserData();
                     goToMainActivity();
                 }
             }

@@ -23,6 +23,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.List;
 
+// This class enables us to get info about the user which is currently logged in through the authenticator
+// It differs from the User class, as the User class is concerned with the customized data for the user in the Database,
+// while this one is only relevant for the authentication
 public class UserRepository {
     private final UserLiveData currentUserData;
     private final Application app;
@@ -49,24 +52,5 @@ public class UserRepository {
     public void signOut() {
         AuthUI.getInstance()
                 .signOut(app.getApplicationContext());
-    }
-
-    public void updateCurrentUser(String displayName, Uri avatarUri) {
-        FirebaseUser user = currentUserData.getValue();
-
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(displayName)
-                .setPhotoUri(avatarUri)
-                .build();
-
-        user.updateProfile(profileUpdates)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-
-                        }
-                    }
-                });
     }
 }

@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+// This class is an itemadapter for Listviews. It ensures that the FellowShip is displayed in the correct way
 public class FellowshipItemAdapter extends ArrayAdapter<Pair<Fellowship, String>> {
     private Activity activity;
     private ArrayList<Pair<Fellowship, String>> fellowshipList;

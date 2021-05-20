@@ -1,5 +1,6 @@
 package com.example.andproject.Entities;
 
+// This class is a POJO that makes it possible to set a Report to the Realtime database
 public class Report {
     private String reportedId;
     private String reporterId;

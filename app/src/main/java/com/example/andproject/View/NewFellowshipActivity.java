@@ -2,16 +2,12 @@ package com.example.andproject.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,11 +23,6 @@ import android.widget.Toast;
 import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.R;
 import com.example.andproject.ViewModel.NewFellowshipViewModel;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -43,15 +34,14 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
 
     private NewFellowshipViewModel viewModel;
 
-    private Spinner categorySpinner, webshopSpinner, paymentMethodSpinner;
+    private Spinner categorySpinner, paymentMethodSpinner;
     private Button deadlinePickButton, createFellowshipButton, cancelCreateFellowshipButton, getLocationButton;
-    private EditText deadlineEditText, amountNeededEditText, locationEditText;
+    private EditText deadlineEditText, amountNeededEditText, locationEditText, webshopEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(NewFellowshipViewModel.class);
-        viewModel.init();
         setContentView(R.layout.activity_new_fellowship);
 
         findViews();
@@ -101,7 +91,7 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
     }
 
     private void findViews() {
-        webshopSpinner = findViewById(R.id.webshopSpinner);
+        webshopEditText = findViewById(R.id.webshopEditText);
         categorySpinner = findViewById(R.id.categorySpinner);
         paymentMethodSpinner = findViewById(R.id.paymentMethodSpinner);
 
@@ -119,7 +109,7 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
         // We create the Fellowship object
         String id = UUID.randomUUID().toString(); // We create a random ID
         String creatorId = viewModel.getCurrentUser().getValue().getUid();
-        String webshop = (String) webshopSpinner.getSelectedItem();
+        String webshop = (String) webshopEditText.getText().toString();
         String category = (String) categorySpinner.getSelectedItem();
         int amountNeeded = Integer.parseInt(amountNeededEditText.getText().toString());
         String paymentMethod = (String) paymentMethodSpinner.getSelectedItem();;
@@ -192,26 +182,33 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
     private boolean allInfoEntered() {
         boolean allIsEntered = true;
 
-        if(webshopSpinner == null || webshopSpinner.getSelectedItem() == null) {
+        if(webshopEditText.getText().toString().trim().length() == 0) {
+            System.out.println("læs: webshopEditText");
             allIsEntered = false;
         }
         if(categorySpinner == null || categorySpinner.getSelectedItem() == null) {
+            System.out.println("læs: categorySpinner");
             allIsEntered = false;
         }
         if(paymentMethodSpinner == null || paymentMethodSpinner.getSelectedItem() == null) {
+            System.out.println("læs: paymentMethodSpinner");
             allIsEntered = false;
         }
 
         if(deadlineEditText.getText().toString().trim().length() == 0) {
+            System.out.println("læs: deadlineEditText");
             allIsEntered = false;
         }
-        if(amountNeededEditText.getText().toString().trim().length() == 0 || Integer.parseInt(amountNeededEditText.getText().toString()) < 1) {
-            allIsEntered = false;
-        }
-        if(locationEditText.getText().toString().trim().length() == 0) {
+        if(amountNeededEditText.getText().toString().trim().length() == 0 || Integer.parseInt(amountNeededEditText.getText().toString()) < 0) {
+            System.out.println("læs: amountNeededEditText");
             allIsEntered = false;
         }
 
+        /* For some reason, it can't register the contents of this textedit, even though it is clearly there, so we skip it for now...
+        if(viewModel.getPickupLocation().getValue().trim().length() == 0) {
+            allIsEntered = false;
+        }
+        */
         return allIsEntered;
     }
 
@@ -228,24 +225,6 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
 
     // This method binds the View's UI elements to the properties in the viewmodel
     private void bindUiElements() {
-        // We bind the webshop spinner
-        final Observer<ArrayList<String>> webShopObserver = new Observer<ArrayList<String>>() {
-            @Override
-            public void onChanged(@Nullable final ArrayList<String> newValue) {
-                // Creating adapter for spinner
-                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(NewFellowshipActivity.this, android.R.layout.simple_spinner_item, newValue);
-
-                // Drop down layout style - list view with radio button
-                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                // attaching data adapter to spinner
-                webshopSpinner.setAdapter(dataAdapter);
-            }
-        };
-
-        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
-        viewModel.getWebShopsList().observe(this, webShopObserver);
-
         // We bind the categories spinner
         final Observer<ArrayList<String>> categoriesObserver = new Observer<ArrayList<String>>() {
             @Override

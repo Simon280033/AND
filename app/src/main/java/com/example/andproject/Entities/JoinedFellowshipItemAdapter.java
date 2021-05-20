@@ -16,6 +16,7 @@ import com.example.andproject.R;
 
 import java.util.ArrayList;
 
+// This class is an itemadapter for Listviews. It ensures that the joined FellowShip is displayed in the correct way
 public class JoinedFellowshipItemAdapter extends ArrayAdapter<Fellowship> {
     private Activity activity;
     private ArrayList<Fellowship> fellowshipList;

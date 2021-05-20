@@ -27,7 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+// This activity handles the view for when a user wants an overview of the users requesting to join a particular FellowShip
 public class FellowshipRequestsActivity extends AppCompatActivity {
     private FellowshipRequestViewModel viewModel;
 

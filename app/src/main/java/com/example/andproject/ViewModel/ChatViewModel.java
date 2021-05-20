@@ -23,7 +23,7 @@ import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+// This viewmodel determines what is being shown on the chat view
 public class ChatViewModel extends AndroidViewModel {
     private final Model model;
 

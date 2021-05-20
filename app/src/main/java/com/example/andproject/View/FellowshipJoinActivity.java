@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
-
+// This activity handles the view for when a user wants to join a FellowShip
 public class FellowshipJoinActivity extends AppCompatActivity {
 
     private FellowshipJoinViewModel viewModel;

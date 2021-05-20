@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
-
+// This viewmodel determines what is being shown on the join fellowship view
 public class FellowshipJoinViewModel extends AndroidViewModel {
     private final Model model;
 
@@ -167,10 +167,6 @@ public class FellowshipJoinViewModel extends AndroidViewModel {
 
     public LiveData<FirebaseUser> getCurrentUser(){
         return model.getCurrentUserData();
-    }
-
-    public void signOut() {
-        model.signOut();
     }
 
     private String distanceBetween(String usersLocation, String pickupLocation) {

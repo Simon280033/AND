@@ -18,7 +18,7 @@ import com.example.andproject.R;
 import com.example.andproject.ViewModel.FellowshipsViewModel;
 
 import java.util.ArrayList;
-
+// This activity acts as a view for the overview of the user's current owned/joined activities
 public class FellowshipsActivity extends AppCompatActivity {
     private FellowshipsViewModel viewModel;
 

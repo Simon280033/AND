@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+// This viewmodel determines what is being shown on the fellowships view
 public class FellowshipsViewModel extends AndroidViewModel {
     private final Model model;
 
@@ -68,7 +68,7 @@ public class FellowshipsViewModel extends AndroidViewModel {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
         Query query = myRef.child("fellowships").orderByChild("creatorId").equalTo(model.getCurrentUserData().getValue().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -99,8 +99,8 @@ public class FellowshipsViewModel extends AndroidViewModel {
 
                         Fellowship fs = new Fellowship(fellowshipId, ownerId, webShop, category, (int) Integer.parseInt("" + amountNeeded), paymentMethod, deadline, pickupCoordinates, partnerId, (int) Integer.parseInt("" + partnerPaid), (int) Integer.parseInt("" + paymentApproved), receiptUrl, (int) Integer.parseInt("" + ownerCompleted), (int) Integer.parseInt("" + partnerCompleted), (int) Integer.parseInt("" + isCompleted));
                         myFellowships.add(fs);
-                        listItems.add(fs);
 
+                        listItems.add(fs);
                     }
                     yourFellowshipsList.setValue(listItems);
                 }
@@ -117,7 +117,7 @@ public class FellowshipsViewModel extends AndroidViewModel {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
         Query query = myRef.child("fellowships").orderByChild("partnerId").equalTo(model.getCurrentUserData().getValue().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -168,15 +168,7 @@ public class FellowshipsViewModel extends AndroidViewModel {
         model.setViewProfileOf(user);
     }
 
-    public void init() {
-        model.init();
-    }
-
     public LiveData<FirebaseUser> getCurrentUser(){
         return model.getCurrentUserData();
-    }
-
-    public void signOut() {
-        model.signOut();
     }
 }

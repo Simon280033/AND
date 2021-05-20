@@ -1,5 +1,8 @@
 package com.example.andproject.Entities;
 
+// This class is a POJO that makes it possible to get/set a customized User to/from the Realtime database.
+// This differs from the UserLiveData, in that it doesn't have anything to do with the authenticator,
+// only the customzied data for the user in the Realtime database
 public class User {
 
     private String id;

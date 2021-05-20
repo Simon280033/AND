@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static java.nio.file.Paths.get;
-
+// This activity acts as a view for when the user wants to find FellowShips to join
 public class FindFellowshipsActivity extends AppCompatActivity {
     private FindFellowshipsViewModel viewModel;
 

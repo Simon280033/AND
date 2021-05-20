@@ -16,6 +16,7 @@ import com.example.andproject.R;
 
 import java.util.ArrayList;
 
+// This class is an itemadapter for Listviews. It ensures that the profile comment is displayed in the correct way
 public class ProfileCommentItemAdapter extends ArrayAdapter<ProfileComment> {
     private Activity activity;
     private ArrayList<ProfileComment> messageList;

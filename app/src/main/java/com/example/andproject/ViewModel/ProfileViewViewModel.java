@@ -22,7 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+// This viewmodel determines what is being shown on the profile view
 public class ProfileViewViewModel extends AndroidViewModel {
     private final Model model;
 
@@ -174,7 +174,6 @@ public class ProfileViewViewModel extends AndroidViewModel {
     public User getViewProfileOf() {
         return model.getViewProfileOf();
     }
-
 
     public boolean isOwnProfile() {
         if (model.getViewProfileOf().getId().equals(model.getCurrentUserData().getValue().getUid())) {

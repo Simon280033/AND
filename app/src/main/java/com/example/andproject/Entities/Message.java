@@ -4,6 +4,7 @@ import android.text.format.DateFormat;
 
 import java.util.Date;
 
+// This class is a POJO that makes it possible to get/set a message for a FellowShip chat from the Realtime database
 public class Message {
 
     private String fellowshipId;

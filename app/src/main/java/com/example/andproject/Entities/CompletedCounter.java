@@ -1,5 +1,6 @@
 package com.example.andproject.Entities;
 
+// This class is a POJO that makes it possible to get a user's completed FellowShips counter from the Realtime database
 public class CompletedCounter {
     private String userId;
     private int count;

@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData;
 import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
 import com.google.firebase.auth.FirebaseUser;
-
+// This viewmodel determines what is being shown on the main view
 public class MainActivityViewModel extends AndroidViewModel {
     private final Model model;
 

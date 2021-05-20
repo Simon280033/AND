@@ -4,6 +4,7 @@ import android.text.format.DateFormat;
 
 import java.util.Date;
 
+// This class is a POJO that makes it possible to get/set a profile comment from the Realtime database
 public class ProfileComment {
 
     private String senderId;

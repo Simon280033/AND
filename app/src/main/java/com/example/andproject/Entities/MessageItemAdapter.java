@@ -19,6 +19,7 @@ import com.example.andproject.View.ProfileViewActivity;
 
 import java.util.ArrayList;
 
+// This class is an itemadapter for Listviews. It ensures that the message is displayed in the correct way
 public class MessageItemAdapter extends ArrayAdapter<Message> {
     private Activity activity;
     private ArrayList<Message> messageList;

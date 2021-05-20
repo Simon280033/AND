@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+// This class provides info for the UserRepository about the authentication user
 public class UserLiveData extends LiveData<FirebaseUser> {
     private final FirebaseAuth.AuthStateListener listener = firebaseAuth -> setValue(firebaseAuth.getCurrentUser());
 

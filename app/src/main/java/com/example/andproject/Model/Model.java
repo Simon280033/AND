@@ -19,6 +19,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+// This class is the main Model.
+// We contain the session data in here, to bind the session together across the different views/viewmodels
 public class Model {
 
     private final Application app;
@@ -173,9 +175,5 @@ public class Model {
 
     public void signOut() {
         userRepository.signOut();
-    }
-
-    public void updateCurrentUser(String displayName, Uri avatarUri) {
-        userRepository.updateCurrentUser(displayName, avatarUri);
     }
 }

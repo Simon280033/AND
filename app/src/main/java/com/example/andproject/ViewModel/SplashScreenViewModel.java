@@ -12,13 +12,12 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-
-public class SpashScreenViewModel extends AndroidViewModel {
+// This viewmodel determines what is being shown on the splashscreen view
+public class SplashScreenViewModel extends AndroidViewModel {
     private final Model model;
 
-    public SpashScreenViewModel(Application app){
+    public SplashScreenViewModel(Application app){
         super(app);
         model = Model.getInstance(app);
-
     }
 }

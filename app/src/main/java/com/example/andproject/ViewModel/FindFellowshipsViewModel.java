@@ -34,7 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-
+// This viewmodel determines what is being shown on the find fellowship view
 public class FindFellowshipsViewModel extends AndroidViewModel {
     private final Model model;
 
@@ -283,16 +283,8 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
         model.setViewProfileOf(user);
     }
 
-    public void init() {
-        model.init();
-    }
-
     public LiveData<FirebaseUser> getCurrentUser(){
         return model.getCurrentUserData();
-    }
-
-    public void signOut() {
-        model.signOut();
     }
 
     private int distanceBetween(String usersLocation, String pickupLocation) {

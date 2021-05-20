@@ -40,7 +40,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
-
+// This activity acts as a view for when the user wants to edit their profile
 public class ProfileEditorActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 42;
     private ProfileEditorViewModel viewModel;
@@ -107,6 +107,7 @@ public class ProfileEditorActivity extends AppCompatActivity {
     private void setUi() {
         // We bind the UI elements
         bindUiElements();
+        viewModel.getOrCreateUser();
         // We refresh them
         viewModel.refreshUserDetails();
     }

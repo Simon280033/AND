@@ -1,5 +1,6 @@
 package com.example.andproject.Entities;
 
+// This class is a POJO that makes it possible to get a FellowShip's join requests from the Realtime database
 public class FellowshipRequest {
     private String requestId;
     private String fellowshipId;

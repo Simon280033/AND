@@ -26,7 +26,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
-
+// This viewmodel determines what is being shown on the sign-in view
 public class SignInViewModel extends AndroidViewModel {
     private final Model model;
 
@@ -68,7 +68,7 @@ public class SignInViewModel extends AndroidViewModel {
                 });
     }
 
-    public void setCustomerUserData() {
+    public void setCustomUserData() {
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
         Query ownerQuery = myRef.child("users").orderByChild("id").equalTo(model.getCurrentUserData().getValue().getUid());

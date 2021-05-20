@@ -29,9 +29,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
+// This viewmodel determines what is being shown on the profile editor view
 public class ProfileEditorViewModel extends AndroidViewModel {
     private final Model model;
 
@@ -110,7 +111,11 @@ public class ProfileEditorViewModel extends AndroidViewModel {
                 if(!dataSnapshot.exists()) { // If the user doesn't already exist in the Realtime Database, it means that this is the first login
                     // Create new user
                     newUser = true;
-                    uploadImageToFireBaseStorage(model.getCurrentUserData().getValue().getPhotoUrl());
+                    Uri imageUri = model.getCurrentUserData().getValue().getPhotoUrl();
+                    if (imageUri == null) {
+                        imageUri = Uri.parse("android.resource://com.example.andproject/drawable/avatar.png");
+                    }
+                    uploadImageToFireBaseStorage(imageUri);
                     saveUserInfo(model.getCurrentUserData().getValue().getDisplayName());
 
                     getOrCreateUser();
@@ -192,10 +197,6 @@ public class ProfileEditorViewModel extends AndroidViewModel {
 
     public LiveData<FirebaseUser> getCurrentUserData() {
         return model.getCurrentUserData();
-    }
-
-    public void updateUser(String displayName, Uri avatarUri) {
-       model.updateCurrentUser(displayName, avatarUri);
     }
 
     }
