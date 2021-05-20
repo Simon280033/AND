@@ -47,16 +47,13 @@ public class ProfileViewViewModel extends AndroidViewModel {
     }
 
     private void refreshProfileComments() {
-        System.out.println("læs: refreshing comments");
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
         Query query = myRef.child("profileComments").orderByChild("receiverId").equalTo(model.getViewProfileOf().getId());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                System.out.println("læs: got here");
                 if (dataSnapshot.exists()) {
-                    System.out.println("læs: got here2");
                     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
                     ArrayList<ProfileComment> listItems=new ArrayList<ProfileComment>();
                     // dataSnapshot is the "issue" node with all children with id 0
@@ -73,7 +70,6 @@ public class ProfileViewViewModel extends AndroidViewModel {
                         profileComments.add(pc);
                         listItems.add(pc);
                     }
-                    System.out.println("læs: " + listItems.size());
                     profileCommentList.setValue(listItems);
                 }
             }

@@ -92,7 +92,6 @@ public class FellowshipsActivity extends AppCompatActivity {
     }
 
     private void setUi() {
-        System.out.println("læs: setting ui");
         // We bind the UI elements
         bindUiElements();
         // We refresh them

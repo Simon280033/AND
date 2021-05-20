@@ -88,7 +88,6 @@ public class FellowshipRequestViewModel extends AndroidViewModel {
     }
 
     private void getRequestsForFellowship() {
-        System.out.println("læs: getting");
         DatabaseReference myRef = FirebaseDatabase.getInstance("https://fellowshippers-aec83-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
         Query query = myRef.child("fellowshipRequests").orderByChild("fellowshipId").equalTo(model.getViewFellowshipInfo().getId());

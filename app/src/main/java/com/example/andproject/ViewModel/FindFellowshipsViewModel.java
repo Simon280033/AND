@@ -13,6 +13,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.andproject.Entities.DayDifferenceCalculator;
+import com.example.andproject.Entities.DistanceCalculator;
 import com.example.andproject.Entities.Fellowship;
 import com.example.andproject.Entities.User;
 import com.example.andproject.Model.Model;
@@ -92,7 +94,7 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
             }
         }
         if (this.distance != -1) {
-            if (distanceBetween(model.getUserLocation(), fs.getPickupCoordinates()) > this.distance) {
+            if (DistanceCalculator.distanceBetween(model.getUserLocation(), fs.getPickupCoordinates()) > this.distance) {
                 met = false;
             }
         }
@@ -103,11 +105,6 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
             }
         }
 
-        if (met) {
-            System.out.println("Criterias met for fellowship " + fs.getId());
-        } else {
-            System.out.println("Criterias not met for fellowship " + fs.getId());
-        }
         return met;
     }
 
@@ -196,7 +193,6 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
                     HashMap<String, Fellowship> joinableFellowships = new HashMap<>();
                     // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        System.out.println("læs: fellowships exists");
                         // We check if it is our own fellowship, if it is, we don't add it to the list (Unless we have already applied for it)
                         if (!((HashMap<String, String>) issue.getValue()).get("creatorId").equals(model.getCurrentUserData().getValue().getUid())) {
                             String fellowshipId = ((HashMap<String, String>) issue.getValue()).get("id");
@@ -227,7 +223,7 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
                             }
                             try {
                                 // We filter out those that are either the user's own, already joined, or where the deadline has passed
-                                if (!pendingsRequestsFellowships.contains(fellowshipId) && calculateDaysLeft(deadline) >= 0 && criteriasMet(fs)) {
+                                if (!pendingsRequestsFellowships.contains(fellowshipId) && DayDifferenceCalculator.calculateDaysLeft(deadline) >= 0 && criteriasMet(fs)) {
                                     joinableFellowships.put(fellowshipId, fs);
 
                                     Pair<Fellowship, String> pair = new Pair<Fellowship, String>(fs, model.getUserLocation());
@@ -254,24 +250,6 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
         });
     }
 
-    private int calculateDaysLeft(String deadline) throws ParseException {
-        Calendar cal1 = new GregorianCalendar();
-        Calendar cal2 = new GregorianCalendar();
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-        Date date = new Date(); // Today
-        cal1.setTime(date);
-        date = sdf.parse(deadline);
-        cal2.setTime(date);
-
-        return daysBetween(cal1.getTime(),cal2.getTime());
-    }
-
-    private int daysBetween(Date d1, Date d2){
-        return (int)( (d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
-    }
-
     public void setViewFellowshipInfo(Fellowship fs) {
         model.setViewFellowshipInfo(fs);
     }
@@ -290,40 +268,5 @@ public class FindFellowshipsViewModel extends AndroidViewModel {
 
     public LiveData<FirebaseUser> getCurrentUser(){
         return model.getCurrentUserData();
-    }
-
-    private int distanceBetween(String usersLocation, String pickupLocation) {
-        // We convert the strings into doubles
-        double lat1, lng1, lat2, lng2;
-
-        String[] parts = usersLocation.split(", ");
-        System.out.println(parts[0] + "-" + parts[1]);
-        lat1 = Double.parseDouble(parts[0]);
-        lng1 = Double.parseDouble(parts[1]);
-
-        parts = pickupLocation.split(", ");
-        System.out.println(parts[0] + "-" + parts[1]);
-        lat2 = Double.parseDouble(parts[0]);
-        lng2 = Double.parseDouble(parts[1]);
-
-        //returns distance in meters
-        double a = (lat1 - lat2) * distPerLat(lat1);
-        double b = (lng1 - lng2) * distPerLng(lng1);
-
-        return Integer.parseInt(String.format("%.0f", (Math.sqrt(a * a + b * b))));
-    }
-
-    private static double distPerLng(double lng){
-        return 0.0003121092*Math.pow(lng, 4)
-                +0.0101182384*Math.pow(lng, 3)
-                -17.2385140059*lng*lng
-                +5.5485277537*lng+111301.967182595;
-    }
-
-    private static double distPerLat(double lat){
-        return -0.000000487305676*Math.pow(lat, 4)
-                -0.0033668574*Math.pow(lat, 3)
-                +0.4601181791*lat*lat
-                -1.4558127346*lat+110579.25662316;
     }
 }

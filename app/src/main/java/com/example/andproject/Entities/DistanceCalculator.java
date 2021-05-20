@@ -2,7 +2,7 @@ package com.example.andproject.Entities;
 
 public class DistanceCalculator {
 
-    public static String distanceBetween(String usersLocation, String pickupLocation) {
+    public static int distanceBetween(String usersLocation, String pickupLocation) {
         // We convert the strings into doubles
         double lat1, lng1, lat2, lng2;
 
@@ -20,7 +20,7 @@ public class DistanceCalculator {
         double a = (lat1 - lat2) * distPerLat(lat1);
         double b = (lng1 - lng2) * distPerLng(lng1);
 
-        return String.format("%.2f", (Math.sqrt(a * a + b * b))) + " meters";
+        return Integer.parseInt(String.format("%.0f", (Math.sqrt(a * a + b * b))));
     }
 
     private static double distPerLng(double lng){

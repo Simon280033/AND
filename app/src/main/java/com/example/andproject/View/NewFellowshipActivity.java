@@ -183,24 +183,19 @@ public class NewFellowshipActivity extends AppCompatActivity implements AdapterV
         boolean allIsEntered = true;
 
         if(webshopEditText.getText().toString().trim().length() == 0) {
-            System.out.println("læs: webshopEditText");
             allIsEntered = false;
         }
         if(categorySpinner == null || categorySpinner.getSelectedItem() == null) {
-            System.out.println("læs: categorySpinner");
             allIsEntered = false;
         }
         if(paymentMethodSpinner == null || paymentMethodSpinner.getSelectedItem() == null) {
-            System.out.println("læs: paymentMethodSpinner");
             allIsEntered = false;
         }
 
         if(deadlineEditText.getText().toString().trim().length() == 0) {
-            System.out.println("læs: deadlineEditText");
             allIsEntered = false;
         }
         if(amountNeededEditText.getText().toString().trim().length() == 0 || Integer.parseInt(amountNeededEditText.getText().toString()) < 0) {
-            System.out.println("læs: amountNeededEditText");
             allIsEntered = false;
         }
 

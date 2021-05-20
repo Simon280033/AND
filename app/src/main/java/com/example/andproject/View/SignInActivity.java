@@ -36,10 +36,8 @@ public class SignInActivity extends AppCompatActivity {
             // We check if a user was returned
             if (user != null) {
                 if (isNewUser()) {
-                    System.out.println("læs: new user");
                     goToProfileEditor();
                 } else {
-                    System.out.println("læs: returning user");
                     viewModel.setCustomUserData();
                     goToMainActivity();
                 }

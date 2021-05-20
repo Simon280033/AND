@@ -8,7 +8,7 @@ import java.util.GregorianCalendar;
 
 public class DayDifferenceCalculator {
 
-    public static String calculateDaysLeft(String deadline) throws ParseException {
+    public static int calculateDaysLeft(String deadline) throws ParseException {
         Calendar cal1 = new GregorianCalendar();
         Calendar cal2 = new GregorianCalendar();
 
@@ -19,7 +19,7 @@ public class DayDifferenceCalculator {
         date = sdf.parse(deadline);
         cal2.setTime(date);
 
-        return "" + daysBetween(cal1.getTime(),cal2.getTime());
+        return daysBetween(cal1.getTime(),cal2.getTime());
     }
 
     private static int daysBetween(Date d1, Date d2){

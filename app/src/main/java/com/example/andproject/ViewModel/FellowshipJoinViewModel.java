@@ -127,7 +127,7 @@ public class FellowshipJoinViewModel extends AndroidViewModel {
         paymentMethod.setValue(fs.getPaymentMethod());
         deadline.setValue(fs.getDeadline());
         // FIND A WAY TO CALCULATE DISTANCE BETWEEN TWO LATLONG POINTS!!!
-        distance.setValue(DistanceCalculator.distanceBetween(model.getUserLocation(), fs.getPickupCoordinates()));
+        distance.setValue(DistanceCalculator.distanceBetween(model.getUserLocation(), fs.getPickupCoordinates()) + " meters");
     }
 
     public void refreshDetails() {
